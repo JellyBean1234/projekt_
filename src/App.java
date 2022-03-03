@@ -54,6 +54,7 @@ public class App {
             }
             rs.close();
             st.close();
+            db.close();
             }
         catch (java.sql.SQLException e) {
             System.out.println(e.getMessage());
@@ -101,14 +102,10 @@ class login_ implements ActionListener{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel();  
         panel.setBackground(new ColorUIResource(170,170,170));
-        
         frame.add(panel);
         placeComponents(panel);
-        
         frame.setPreferredSize(new Dimension(300, 160));
-        
         frame.pack();
-        
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         
@@ -229,7 +226,7 @@ class login_ implements ActionListener{
         }   
     }
     public static void menu(){
-        JFrame frame_menu = new JFrame("LOGIN");
+        JFrame frame_menu = new JFrame("MENU");
         frame_menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel_menu = new JPanel();  
         panel_menu.setBackground(new ColorUIResource(170,170,170));
@@ -591,13 +588,14 @@ class login_ implements ActionListener{
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
                 JScrollPane pane = new JScrollPane(table);
-                JFrame f = new JFrame("Populate JTable from Database");
+                JFrame f = new JFrame("RAZREDI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
                 f.add(panel);
                 f.setSize(600, 300);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
+                table.getColumnModel().getColumn(0).setPreferredWidth(25);
             }
             
         
@@ -609,7 +607,7 @@ class login_ implements ActionListener{
                 ResultSet res = stm.executeQuery(query);
 
                 String columns[] = { "id", "ime", "opis", "kratica" };
-                String data[][] = new String[12][3];
+                String data[][] = new String[12][4];
 
                 int i = 0;
                 while (res.next()) {
@@ -628,64 +626,41 @@ class login_ implements ActionListener{
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
                 JScrollPane pane = new JScrollPane(table);
-                JFrame f = new JFrame("Populate JTable from Database");
+                JFrame f = new JFrame("PROGRAMI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
                 f.add(panel);
                 f.setSize(600, 300);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
+                table.getColumnModel().getColumn(0).setPreferredWidth(25);
             }
             if(view_database == "dijaki")
             {
-                
-            }
-            if(view_database == "kraji")
-            {
-                
-            }
-            if(view_database == "logs")
-            {
-               
-            }
-            con.close();
-            }
-            
-        catch (java.sql.SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    
-
-
-    /*private static void placeComponents_view(JPanel panel_view) {
-        panel_view.setLayout(null);
-        System.out.println(view_database);
-        
-        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
-        String username = "ioztqmdz";
-        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-
-        try {
-            Connection con = DriverManager.getConnection(url, username, password);
-            
-            if(view_database == "razredi")
-            {
-                String query = "SELECT * FROM razredi";
+                String query = "SELECT * FROM dijaki";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
 
-                String columns[] = { "id", "kratica", "program_id" };
-                String data[][] = new String[12][3];
+                String columns[] = { "id", "ime", "priimek", "datum_rojstva", "spol", "kraj_id", "razred_id" };
+                String data[][] = new String[12][7];
 
                 int i = 0;
                 while (res.next()) {
                     int id = res.getInt("id");
-                    String nom = res.getString("kratica");
-                    String age = res.getString("program_id");
+                    String ime = res.getString("ime");
+                    String priimek = res.getString("priimek");
+                    String datum_rojstva = res.getString("datum_rojstva");
+                    String spol = res.getString("spol");
+                    int kraj_id = res.getInt("kraj_id");
+                    int razred_id = res.getInt("razred_id");
                     data[i][0] = id + "";
-                    data[i][1] = nom;
-                    data[i][2] = age;
+                    data[i][1] = ime;
+                    data[i][2] = priimek;
+                    data[i][3] = datum_rojstva;
+                    data[i][4] = spol;
+                    data[i][5] = kraj_id + "";
+                    data[i][6] = razred_id + "";
                     i++;
                 }
                 DefaultTableModel model = new DefaultTableModel(data, columns);
@@ -693,64 +668,104 @@ class login_ implements ActionListener{
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
                 JScrollPane pane = new JScrollPane(table);
-                JFrame f = new JFrame("Populate JTable from Database");
+                JFrame f = new JFrame("DIJAKI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
                 f.add(panel);
                 f.setSize(600, 300);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-            }
-            }/*
-            if(view_database == "programi")
-            {
-                ResultSet rs = st.executeQuery("SELECT * FROM programi");
-                while (rs.next()) {
-                    System.out.print("ID: ");
-                    System.out.println(rs.getString(1));
-                    System.out.print("IME: ");
-                    System.out.println(rs.getString(2));
-                }
-                rs.close();
-            }
-            if(view_database == "dijaki")
-            {
-                ResultSet rs = st.executeQuery("SELECT * FROM dijaki");
-                while (rs.next()) {
-                    System.out.print("ID: ");
-                    System.out.println(rs.getString(1));
-                    System.out.print("IME: ");
-                    System.out.println(rs.getString(2));
-                }
-                rs.close();
+                table.getColumnModel().getColumn(0).setPreferredWidth(25);
             }
             if(view_database == "kraji")
             {
-                ResultSet rs = st.executeQuery("SELECT * FROM kraji");
-                while (rs.next()) {
-                    System.out.print("ID: ");
-                    System.out.println(rs.getString(1));
-                    System.out.print("IME: ");
-                    System.out.println(rs.getString(2));
+                String query = "SELECT * FROM kraji";
+
+                Statement stm = con.createStatement();
+                ResultSet res = stm.executeQuery(query);
+
+                String columns[] = { "id", "ime", "posta", "podkraji" };
+                String data[][] = new String[553][4];
+
+                int i = 0;
+                while (res.next()) {
+                    int id = res.getInt("id");
+                    String ime = res.getString("ime");
+                    String posta = res.getString("posta");
+                    String podkraji = res.getString("podkraji");
+                    data[i][0] = id + "";
+                    data[i][1] = ime;
+                    data[i][2] = posta;
+                    data[i][3] = podkraji;
+                    i++;
                 }
-                rs.close();
+                DefaultTableModel model = new DefaultTableModel(data, columns);
+                JTable table = new JTable(model);
+                table.setShowGrid(true);
+                table.setShowVerticalLines(true);
+                JScrollPane pane = new JScrollPane(table);
+                JFrame f = new JFrame("KRAJI VIEW");
+                JPanel panel = new JPanel();
+                panel.add(pane);
+                f.add(panel);
+                f.setSize(600, 300);
+                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                f.setVisible(true);
+                table.getColumnModel().getColumn(0).setPreferredWidth(25);
             }
             if(view_database == "logs")
             {
-                ResultSet rs = st.executeQuery("SELECT * FROM dijaki_logs");
-                while (rs.next()) {
-                    System.out.print("ID: ");
-                    System.out.println(rs.getString(1));
-                    System.out.print("IME: ");
-                    System.out.println(rs.getString(2));
+                String query = "SELECT * FROM dijaki_logs";
+
+                Statement stm = con.createStatement();
+                ResultSet res = stm.executeQuery(query);
+
+                String columns[] = { "id", "ime", "priimek", "datum_rojstva", "spol", "kraj_id", "razred_id", "datum_spremembe", "lastnik_id", "tip_spremembe" };
+                String data[][] = new String[12][10];
+
+                int i = 0;
+                while (res.next()) {
+                    int id = res.getInt("id");
+                    String ime = res.getString("ime");
+                    String priimek = res.getString("priimek");
+                    String datum_rojstva = res.getString("datum_rojstva");
+                    String spol = res.getString("spol");
+                    int kraj_id = res.getInt("kraj_id");
+                    int razred_id = res.getInt("razred_id");
+                    String datum_spremembe = res.getString("datum_spremembe");
+                    int lastnik_id = res.getInt("lastnik_id");
+                    String tip_spremembe = res.getString("tip_spremebe");
+                    data[i][0] = id + "";
+                    data[i][1] = ime;
+                    data[i][2] = priimek;
+                    data[i][3] = datum_rojstva;
+                    data[i][4] = spol;
+                    data[i][5] = kraj_id + "";
+                    data[i][6] = razred_id + "";
+                    data[i][7] = datum_spremembe;
+                    data[i][8] = lastnik_id + "";
+                    data[i][9] = tip_spremembe;
+                    i++;
                 }
-                rs.close();
+                DefaultTableModel model = new DefaultTableModel(data, columns);
+                JTable table = new JTable(model);
+                table.setShowGrid(true);
+                table.setShowVerticalLines(true);
+                JScrollPane pane = new JScrollPane(table);
+                JFrame f = new JFrame("LOGS VIEW");
+                JPanel panel = new JPanel();
+                panel.add(pane);
+                f.add(panel);
+                f.setSize(600, 300);
+                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                f.setVisible(true);
+                table.getColumnModel().getColumn(0).setPreferredWidth(25);
             }
-            st.close();
-            db.close();
+            con.close();
             }
+            
         catch (java.sql.SQLException e) {
             System.out.println(e.getMessage());
-        }*/
+        }
     }
 }
