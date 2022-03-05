@@ -11,10 +11,16 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField; 
+import javax.swing.JTextField;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+import javax.swing.SwingUtilities;
+
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
@@ -25,6 +31,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 //table
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class App {
     
@@ -89,7 +97,11 @@ class login_ implements ActionListener{
     public static JButton addButton;
     public static JButton editButton;
     public static JButton deleteButton;
+    public static JButton DeleteButton;
     private static JLabel success;
+
+    public static JTextField deleteText;
+    public static JFrame razredi_frame;
 
     static String view_database = "";
 
@@ -226,6 +238,10 @@ class login_ implements ActionListener{
         {
             delete();
         }
+        else if(e.getSource() == DeleteButton)
+        {
+            view();
+        }
         else
         {
             System.out.println("button not in e.getsource");
@@ -338,11 +354,11 @@ class login_ implements ActionListener{
         panel_razredi.add(editButton);
 
         UIManager.put("Button.gradient",a);
-        deleteButton = new JButton("DELETE");
-        deleteButton.setBounds(100, 100, 90, 25);
-        deleteButton.setForeground(Color.white);  
-        deleteButton.addActionListener(new login_());
-        panel_razredi.add(deleteButton);
+        DeleteButton = new JButton("DELETE");
+        DeleteButton.setBounds(100, 100, 90, 25);
+        DeleteButton.setForeground(Color.white);  
+        DeleteButton.addActionListener(new login_());
+        panel_razredi.add(DeleteButton);
     }
 
     public static void programi(){
@@ -393,11 +409,11 @@ class login_ implements ActionListener{
         panel_programi.add(editButton);
 
         UIManager.put("Button.gradient",a);
-        deleteButton = new JButton("DELETE");
-        deleteButton.setBounds(100, 100, 90, 25);
-        deleteButton.setForeground(Color.white);  
-        deleteButton.addActionListener(new login_());
-        panel_programi.add(deleteButton);
+        DeleteButton = new JButton("DELETE");
+        DeleteButton.setBounds(100, 100, 90, 25);
+        DeleteButton.setForeground(Color.white);  
+        DeleteButton.addActionListener(new login_());
+        panel_programi.add(DeleteButton);
     }
 
     public static void dijaki(){
@@ -448,11 +464,11 @@ class login_ implements ActionListener{
         panel_dijaki.add(editButton);
 
         UIManager.put("Button.gradient",a);
-        deleteButton = new JButton("DELETE");
-        deleteButton.setBounds(100, 100, 90, 25);
-        deleteButton.setForeground(Color.white);  
-        deleteButton.addActionListener(new login_());
-        panel_dijaki.add(deleteButton);
+        DeleteButton = new JButton("DELETE");
+        DeleteButton.setBounds(100, 100, 90, 25);
+        DeleteButton.setForeground(Color.white);  
+        DeleteButton.addActionListener(new login_());
+        panel_dijaki.add(DeleteButton);
     }
 
     public static void kraji(){
@@ -503,11 +519,11 @@ class login_ implements ActionListener{
         panel_kraji.add(editButton);
 
         UIManager.put("Button.gradient",a);
-        deleteButton = new JButton("DELETE");
-        deleteButton.setBounds(100, 100, 90, 25);
-        deleteButton.setForeground(Color.white);  
-        deleteButton.addActionListener(new login_());
-        panel_kraji.add(deleteButton);
+        DeleteButton = new JButton("DELETE");
+        DeleteButton.setBounds(100, 100, 90, 25);
+        DeleteButton.setForeground(Color.white);  
+        DeleteButton.addActionListener(new login_());
+        panel_kraji.add(DeleteButton);
     }
 
     public static void logs(){
@@ -552,14 +568,16 @@ class login_ implements ActionListener{
         panel_logs.add(editButton);
 
         UIManager.put("Button.gradient",a);
-        deleteButton = new JButton("DELETE");
-        deleteButton.setBounds(100, 70, 90, 25);
-        deleteButton.setForeground(Color.white);  
-        deleteButton.addActionListener(new login_());
-        panel_logs.add(deleteButton);
+        DeleteButton = new JButton("DELETE");
+        DeleteButton.setBounds(100, 70, 90, 25);
+        DeleteButton.setForeground(Color.white);  
+        DeleteButton.addActionListener(new login_());
+        panel_logs.add(DeleteButton);
     }
 
-    public static void view(){
+public String izbran_id;
+
+    public void view(){
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
@@ -572,7 +590,7 @@ class login_ implements ActionListener{
             
             if(view_database == "razredi")
             {
-                String query = "SELECT * FROM razredi";
+                String query = "SELECT * FROM razredi ORDER BY id";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
@@ -605,21 +623,22 @@ class login_ implements ActionListener{
                 table.setShowVerticalLines(true);
                 table.setRowHeight(20);
                 table.setPreferredSize(new Dimension(450, 500));
+                
                 table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
                 DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
                 dtcr.setHorizontalTextPosition(DefaultTableCellRenderer.CENTER);
                // table.setBounds(100,100,1000, 1000);
                 JScrollPane pane = new JScrollPane(table);
-                JFrame f = new JFrame("RAZREDI VIEW");
+                razredi_frame = new JFrame("RAZREDI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
-              //  panel.add(table);
+              //panel.add(table);
 
               JLabel deleteLabel = new JLabel("Insert ID to delete");
               deleteLabel.setBounds(10,20,80,25);
               panel.add(deleteLabel);
 
-              JTextField deleteText = new JTextField(20);
+              deleteText = new JTextField(20);
               deleteText.setBounds(100,20,165,25);
               panel.add(deleteText);
 
@@ -631,18 +650,19 @@ class login_ implements ActionListener{
 
                 
 
-                f.add(panel);
-                f.setSize(500, 500);
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                f.setVisible(true);
+                razredi_frame.add(panel);
+                razredi_frame.setSize(500, 500);
+                razredi_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                razredi_frame.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(1);
+                
                 
             }
             
         
             if(view_database == "programi")
             {
-                String query = "SELECT * FROM programi";
+                String query = "SELECT * FROM programi ORDER BY id";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
@@ -682,10 +702,24 @@ class login_ implements ActionListener{
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(5);
+
+                JLabel deleteLabel = new JLabel("Insert ID to delete");
+              deleteLabel.setBounds(10,20,80,25);
+              panel.add(deleteLabel);
+
+              deleteText = new JTextField(20);
+              deleteText.setBounds(100,20,165,25);
+              panel.add(deleteText);
+
+                deleteButton = new JButton("DELETE");
+                deleteButton.setBounds(1000, 1000, 90, 25);
+                deleteButton.addActionListener(new login_());
+                deleteButton.setForeground(Color.white);
+                panel.add(deleteButton);
             }
             if(view_database == "dijaki")
             {
-                String query = "SELECT * FROM dijaki";
+                String query = "SELECT * FROM dijaki ORDER BY id";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
@@ -734,12 +768,26 @@ class login_ implements ActionListener{
                 f.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(5);
                 table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+
+                JLabel deleteLabel = new JLabel("Insert ID to delete");
+              deleteLabel.setBounds(10,20,80,25);
+              panel.add(deleteLabel);
+
+              deleteText = new JTextField(20);
+              deleteText.setBounds(100,20,165,25);
+              panel.add(deleteText);
+
+                deleteButton = new JButton("DELETE");
+                deleteButton.setBounds(1000, 1000, 90, 25);
+                deleteButton.addActionListener(new login_());
+                deleteButton.setForeground(Color.white);
+                panel.add(deleteButton);
  
 
             }
             if(view_database == "kraji")
             {
-                String query = "SELECT * FROM kraji";
+                String query = "SELECT * FROM kraji ORDER BY id";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
@@ -779,10 +827,24 @@ class login_ implements ActionListener{
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
                 //table.getColumnModel().getColumn(0).setPreferredWidth(5);
+
+                JLabel deleteLabel = new JLabel("Insert ID to delete");
+              deleteLabel.setBounds(10,20,80,25);
+              panel.add(deleteLabel);
+
+              deleteText = new JTextField(20);
+              deleteText.setBounds(100,20,165,25);
+              panel.add(deleteText);
+
+                deleteButton = new JButton("DELETE");
+                deleteButton.setBounds(1000, 1000, 90, 25);
+                deleteButton.addActionListener(new login_());
+                deleteButton.setForeground(Color.white);
+                panel.add(deleteButton);
             }
             if(view_database == "logs")
             {
-                String query = "SELECT * FROM dijaki_logs";
+                String query = "SELECT * FROM dijaki_logs ORDER BY id";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
@@ -837,76 +899,12 @@ class login_ implements ActionListener{
                 table.getColumnModel().getColumn(0).setPreferredWidth(25);
                 table.getColumnModel().getColumn(4).setPreferredWidth(25);
                 table.getColumnModel().getColumn(6).setPreferredWidth(25);
-            }
-            con.close();
-            }
-            
-        catch (java.sql.SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    public static void delete()
-    {
-        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
-        String username = "ioztqmdz";
-        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-        int collumn_count = 0;
-        
-        try {
-            Connection con = DriverManager.getConnection(url, username, password);
-            
-            java.sql.Statement st = con.createStatement();
-            
-            if(view_database == "razredi")
-            {
-                String query = "SELECT * FROM razredi";
 
-                Statement stm = con.createStatement();
-                ResultSet res = stm.executeQuery(query);
-
-                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM razredi");
-                while (rs.next()) {
-                    collumn_count = rs.getInt(1);
-                    System.out.println(collumn_count);
-                }
-
-                String columns[] = { "id", "kratica", "program_id", "dijaki_count" };
-                String data[][] = new String[collumn_count][5];
-
-                int i = 0;
-                while (res.next()) {
-                    int id = res.getInt("id");
-                    String kratica = res.getString("kratica");
-                    String program_id = res.getString("program_id");
-                    int dijaki_count = res.getInt("dijaki_count");
-                    
-                    data[i][0] = id + "";
-                    data[i][1] = kratica;
-                    data[i][2] = program_id;
-                    data[i][3] = dijaki_count + "";
-                    i++;
-                }
-                DefaultTableModel model = new DefaultTableModel(data, columns);
-                JTable table = new JTable(model);
-                table.setShowGrid(true);
-                table.setShowVerticalLines(true);
-                table.setRowHeight(20);
-                table.setPreferredSize(new Dimension(450, 500));
-                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
-                DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
-                dtcr.setHorizontalTextPosition(DefaultTableCellRenderer.CENTER);
-               // table.setBounds(100,100,1000, 1000);
-                JScrollPane pane = new JScrollPane(table);
-                JFrame f = new JFrame("RAZREDI VIEW");
-                JPanel panel = new JPanel();
-                panel.add(pane);
-              //  panel.add(table);
-
-              JLabel deleteLabel = new JLabel("Insert ID to delete");
+                JLabel deleteLabel = new JLabel("Insert ID to delete");
               deleteLabel.setBounds(10,20,80,25);
               panel.add(deleteLabel);
 
-              JTextField deleteText = new JTextField(20);
+              deleteText = new JTextField(20);
               deleteText.setBounds(100,20,165,25);
               panel.add(deleteText);
 
@@ -915,40 +913,87 @@ class login_ implements ActionListener{
                 deleteButton.addActionListener(new login_());
                 deleteButton.setForeground(Color.white);
                 panel.add(deleteButton);
+            }
+            con.close();
+        }
+            
+        catch (java.sql.SQLException e) {
+            System.out.println(e.getMessage());
+        
+        }
+    }
+    
 
-                
+    
+    public void delete()
+    {
+        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String username = "ioztqmdz";
+        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
+        int collumn_count = 0;
+        
+        izbran_id = deleteText.getText();
 
-                f.add(panel);
-                f.setSize(500, 500);
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                f.setVisible(true);
-                table.getColumnModel().getColumn(0).setPreferredWidth(1);
-                
+        System.out.println(izbran_id);
+
+        try {
+            Connection con = DriverManager.getConnection(url, username, password);
+            
+            java.sql.Statement st = con.createStatement();
+            
+            if(view_database == "razredi")
+            {
+                ResultSet rs = st.executeQuery("DELETE FROM razredi WHERE id = '"+izbran_id+"'");
+                while (rs.next()) {
+                  collumn_count = rs.getInt(1);
+                   System.out.println(collumn_count);
+               }
             }
             
         
             if(view_database == "programi")
             {
-                
+                ResultSet rs = st.executeQuery("DELETE FROM programi WHERE id = '"+izbran_id+"'");
+                while (rs.next()) {
+                  collumn_count = rs.getInt(1);
+                   System.out.println(collumn_count);
             }
+        }
             if(view_database == "dijaki")
             {
- 
+                ResultSet rs = st.executeQuery("DELETE FROM dijaki WHERE id = '"+izbran_id+"'");
+                while (rs.next()) {
+                  collumn_count = rs.getInt(1);
+                   System.out.println(collumn_count);
 
+                }
             }
             if(view_database == "kraji")
             {
-                
+                ResultSet rs = st.executeQuery("DELETE FROM kraji WHERE id = '"+izbran_id+"'");
+                while (rs.next()) {
+                  collumn_count = rs.getInt(1);
+                   System.out.println(collumn_count);
+
+                }
             }
             if(view_database == "logs")
             {
-                
+                ResultSet rs = st.executeQuery("DELETE FROM dijaki_logs WHERE id = '"+izbran_id+"'");
+                while (rs.next()) {
+                  collumn_count = rs.getInt(1);
+                   System.out.println(collumn_count);
+
+                }
             }
             con.close();
-            }
+        }
             
         catch (java.sql.SQLException e) {
             System.out.println(e.getMessage());
     }
+    view();
     }
 }
+
+
