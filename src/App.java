@@ -21,8 +21,10 @@ import javax.swing.plaf.ColorUIResource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.table.DefaultTableCellRenderer;
 //table
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 public class App {
     
@@ -219,6 +221,10 @@ class login_ implements ActionListener{
         else if(e.getSource() == viewButton)
         {
             view();
+        }
+        else if(e.getSource() == deleteButton)
+        {
+            delete();
         }
         else
         {
@@ -557,9 +563,12 @@ class login_ implements ActionListener{
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-
+        int collumn_count = 0;
+        
         try {
             Connection con = DriverManager.getConnection(url, username, password);
+            
+            java.sql.Statement st = con.createStatement();
             
             if(view_database == "razredi")
             {
@@ -568,8 +577,14 @@ class login_ implements ActionListener{
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
 
+                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM razredi");
+                while (rs.next()) {
+                    collumn_count = rs.getInt(1);
+                    System.out.println(collumn_count);
+                }
+
                 String columns[] = { "id", "kratica", "program_id", "dijaki_count" };
-                String data[][] = new String[12][4];
+                String data[][] = new String[collumn_count][5];
 
                 int i = 0;
                 while (res.next()) {
@@ -577,6 +592,7 @@ class login_ implements ActionListener{
                     String kratica = res.getString("kratica");
                     String program_id = res.getString("program_id");
                     int dijaki_count = res.getInt("dijaki_count");
+                    
                     data[i][0] = id + "";
                     data[i][1] = kratica;
                     data[i][2] = program_id;
@@ -587,15 +603,40 @@ class login_ implements ActionListener{
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
+                table.setRowHeight(20);
+                table.setPreferredSize(new Dimension(450, 500));
+                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+                DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
+                dtcr.setHorizontalTextPosition(DefaultTableCellRenderer.CENTER);
+               // table.setBounds(100,100,1000, 1000);
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("RAZREDI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
+              //  panel.add(table);
+
+              JLabel deleteLabel = new JLabel("Insert ID to delete");
+              deleteLabel.setBounds(10,20,80,25);
+              panel.add(deleteLabel);
+
+              JTextField deleteText = new JTextField(20);
+              deleteText.setBounds(100,20,165,25);
+              panel.add(deleteText);
+
+                deleteButton = new JButton("DELETE");
+                deleteButton.setBounds(1000, 1000, 90, 25);
+                deleteButton.addActionListener(new login_());
+                deleteButton.setForeground(Color.white);
+                panel.add(deleteButton);
+
+                
+
                 f.add(panel);
-                f.setSize(600, 300);
+                f.setSize(500, 500);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-                table.getColumnModel().getColumn(0).setPreferredWidth(25);
+                table.getColumnModel().getColumn(0).setPreferredWidth(1);
+                
             }
             
         
@@ -605,9 +646,13 @@ class login_ implements ActionListener{
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
-
+                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM programi");
+                while (rs.next()) {
+                    collumn_count = rs.getInt(1);
+                    System.out.println(collumn_count);
+                }
                 String columns[] = { "id", "ime", "opis", "kratica" };
-                String data[][] = new String[12][4];
+                String data[][] = new String[collumn_count][4];
 
                 int i = 0;
                 while (res.next()) {
@@ -625,15 +670,18 @@ class login_ implements ActionListener{
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
+                table.setRowHeight(20);
+                table.setPreferredSize(new Dimension(450, 500));
+                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("PROGRAMI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
                 f.add(panel);
-                f.setSize(600, 300);
+                f.setSize(500, 500);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-                table.getColumnModel().getColumn(0).setPreferredWidth(25);
+                table.getColumnModel().getColumn(0).setPreferredWidth(5);
             }
             if(view_database == "dijaki")
             {
@@ -641,19 +689,24 @@ class login_ implements ActionListener{
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
-
+                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM dijaki");
+                while (rs.next()) {
+                    collumn_count = rs.getInt(1);
+                    System.out.println(collumn_count);
+                }
                 String columns[] = { "id", "ime", "priimek", "datum_rojstva", "spol", "kraj_id", "razred_id" };
-                String data[][] = new String[12][7];
+                String data[][] = new String[collumn_count][7];
 
                 int i = 0;
                 while (res.next()) {
                     int id = res.getInt("id");
                     String ime = res.getString("ime");
                     String priimek = res.getString("priimek");
-                    String datum_rojstva = res.getString("datum_rojstva");
+                    String datum_rojstva = res.getString("datum_rojstva").replace("00:00:00", "");
                     String spol = res.getString("spol");
                     int kraj_id = res.getInt("kraj_id");
                     int razred_id = res.getInt("razred_id");
+
                     data[i][0] = id + "";
                     data[i][1] = ime;
                     data[i][2] = priimek;
@@ -667,15 +720,22 @@ class login_ implements ActionListener{
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
+                table.setRowHeight(20);
+                table.setPreferredSize(new Dimension(450, 500));
+                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+                
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("DIJAKI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
                 f.add(panel);
-                f.setSize(600, 300);
+                f.setSize(800, 500);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-                table.getColumnModel().getColumn(0).setPreferredWidth(25);
+                table.getColumnModel().getColumn(0).setPreferredWidth(5);
+                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+ 
+
             }
             if(view_database == "kraji")
             {
@@ -683,9 +743,13 @@ class login_ implements ActionListener{
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
-
+                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM kraji");
+                while (rs.next()) {
+                    collumn_count = rs.getInt(1);
+                    System.out.println(collumn_count);
+                }
                 String columns[] = { "id", "ime", "posta", "podkraji" };
-                String data[][] = new String[553][4];
+                String data[][] = new String[collumn_count][4];
 
                 int i = 0;
                 while (res.next()) {
@@ -703,15 +767,18 @@ class login_ implements ActionListener{
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
+                table.setRowHeight(20);
+                //table.setPreferredSize(new Dimension(450, 500));
+                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("KRAJI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
                 f.add(panel);
-                f.setSize(600, 300);
+                f.setSize(500, 500);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-                table.getColumnModel().getColumn(0).setPreferredWidth(25);
+                //table.getColumnModel().getColumn(0).setPreferredWidth(5);
             }
             if(view_database == "logs")
             {
@@ -719,9 +786,13 @@ class login_ implements ActionListener{
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
-
+                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM dijaki_logs");
+                while (rs.next()) {
+                    collumn_count = rs.getInt(1);
+                    System.out.println(collumn_count);
+                }
                 String columns[] = { "id", "ime", "priimek", "datum_rojstva", "spol", "kraj_id", "razred_id", "datum_spremembe", "lastnik_id", "tip_spremembe" };
-                String data[][] = new String[12][10];
+                String data[][] = new String[collumn_count][10];
 
                 int i = 0;
                 while (res.next()) {
@@ -751,15 +822,21 @@ class login_ implements ActionListener{
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
+                table.setRowHeight(20);
+                table.setRowHeight(20);
+                table.setPreferredSize(new Dimension(450, 500));
+                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("LOGS VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
                 f.add(panel);
-                f.setSize(600, 300);
+                f.setSize(500, 500);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(25);
+                table.getColumnModel().getColumn(4).setPreferredWidth(25);
+                table.getColumnModel().getColumn(6).setPreferredWidth(25);
             }
             con.close();
             }
@@ -767,5 +844,111 @@ class login_ implements ActionListener{
         catch (java.sql.SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+    public static void delete()
+    {
+        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String username = "ioztqmdz";
+        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
+        int collumn_count = 0;
+        
+        try {
+            Connection con = DriverManager.getConnection(url, username, password);
+            
+            java.sql.Statement st = con.createStatement();
+            
+            if(view_database == "razredi")
+            {
+                String query = "SELECT * FROM razredi";
+
+                Statement stm = con.createStatement();
+                ResultSet res = stm.executeQuery(query);
+
+                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM razredi");
+                while (rs.next()) {
+                    collumn_count = rs.getInt(1);
+                    System.out.println(collumn_count);
+                }
+
+                String columns[] = { "id", "kratica", "program_id", "dijaki_count" };
+                String data[][] = new String[collumn_count][5];
+
+                int i = 0;
+                while (res.next()) {
+                    int id = res.getInt("id");
+                    String kratica = res.getString("kratica");
+                    String program_id = res.getString("program_id");
+                    int dijaki_count = res.getInt("dijaki_count");
+                    
+                    data[i][0] = id + "";
+                    data[i][1] = kratica;
+                    data[i][2] = program_id;
+                    data[i][3] = dijaki_count + "";
+                    i++;
+                }
+                DefaultTableModel model = new DefaultTableModel(data, columns);
+                JTable table = new JTable(model);
+                table.setShowGrid(true);
+                table.setShowVerticalLines(true);
+                table.setRowHeight(20);
+                table.setPreferredSize(new Dimension(450, 500));
+                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+                DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
+                dtcr.setHorizontalTextPosition(DefaultTableCellRenderer.CENTER);
+               // table.setBounds(100,100,1000, 1000);
+                JScrollPane pane = new JScrollPane(table);
+                JFrame f = new JFrame("RAZREDI VIEW");
+                JPanel panel = new JPanel();
+                panel.add(pane);
+              //  panel.add(table);
+
+              JLabel deleteLabel = new JLabel("Insert ID to delete");
+              deleteLabel.setBounds(10,20,80,25);
+              panel.add(deleteLabel);
+
+              JTextField deleteText = new JTextField(20);
+              deleteText.setBounds(100,20,165,25);
+              panel.add(deleteText);
+
+                deleteButton = new JButton("DELETE");
+                deleteButton.setBounds(1000, 1000, 90, 25);
+                deleteButton.addActionListener(new login_());
+                deleteButton.setForeground(Color.white);
+                panel.add(deleteButton);
+
+                
+
+                f.add(panel);
+                f.setSize(500, 500);
+                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                f.setVisible(true);
+                table.getColumnModel().getColumn(0).setPreferredWidth(1);
+                
+            }
+            
+        
+            if(view_database == "programi")
+            {
+                
+            }
+            if(view_database == "dijaki")
+            {
+ 
+
+            }
+            if(view_database == "kraji")
+            {
+                
+            }
+            if(view_database == "logs")
+            {
+                
+            }
+            con.close();
+            }
+            
+        catch (java.sql.SQLException e) {
+            System.out.println(e.getMessage());
+    }
     }
 }
