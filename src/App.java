@@ -1,7 +1,9 @@
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 
 //ui-login
@@ -200,34 +202,35 @@ class login_ implements ActionListener{
         if(e.getSource() == loginButton)
         {
             String user = userText.getText();
-            String pass = passwordText.getText(); 
+            String pass = passwordText.getText();
             try {
                 Connection db = DriverManager.getConnection(url, username, password);
-                java.sql.Statement st = db.createStatement();
-                ResultSet rs = st.executeQuery("SELECT * FROM admini");
-                while (rs.next()) {
-    
-                    if(user.equals(rs.getString(2)) && pass.equals(rs.getString(3)))
-                    {
-                        success.setText("Prijava uspešna");
-                        break;
-                    }  
+               // java.sql.Statement st = db.createStatement();
+                CallableStatement cstmt = db.prepareCall("{?= CALL prijava(?, ?)}");
+                cstmt.registerOutParameter(1, Types.INTEGER);
+                cstmt.setString(2, user);
+                cstmt.setString(3, pass);
+                cstmt.execute();
+                Integer result = cstmt.getInt(1);
+               // System.out.println(result + "");
+                cstmt.close();
+                if(result == 1)
+                {
+                    menu();
                 }
-                rs.close();
-                st.close();
+                else
+                {
+                    success.setText("Prijava ni uspešna");
+                }
                 db.close();
                 }
             catch (java.sql.SQLException exception) {
                 System.out.println(exception.getMessage());
             }
-            if(success.getText().equals(""))
-            {
-                success.setText("Prijava ni uspešna");
-                
-            }else{
-                menu();
-            }
+            
         }
+            
+        
 
         else if(e.getSource() == razrediButton)
         {
@@ -1032,52 +1035,40 @@ public String izbran_id;
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-        int collumn_count = 0;
         
         izbran_id = deleteText.getText();
-
-        System.out.println(izbran_id);
+        int izbranID = Integer.valueOf(izbran_id);
 
         try {
-            Connection con = DriverManager.getConnection(url, username, password);
+            Connection con = DriverManager.getConnection(url, username, password);       
             
-            java.sql.Statement st = con.createStatement();
-            
-            if(view_database == "razredi")
-            {
-                ResultSet rs = st.executeQuery("DELETE FROM razredi WHERE id = '"+izbran_id+"'");
-                while (rs.next()) {
-                  collumn_count = rs.getInt(1);
-                   System.out.println(collumn_count);
-               }
-            }
-            
-        
-            if(view_database == "programi")
-            {
-                ResultSet rs = st.executeQuery("DELETE FROM programi WHERE id = '"+izbran_id+"'");
-                while (rs.next()) {
-                  collumn_count = rs.getInt(1);
-                   System.out.println(collumn_count);
-            }
-        }
             if(view_database == "dijaki")
             {
-                ResultSet rs = st.executeQuery("DELETE FROM dijaki WHERE id = '"+izbran_id+"'");
-                while (rs.next()) {
-                  collumn_count = rs.getInt(1);
-                   System.out.println(collumn_count);
-
-                }
+                CallableStatement cstmt = con.prepareCall("{CALL delete_dijaki(?)}");
+                cstmt.setInt(1, izbranID);
+                cstmt.execute();
+                cstmt.close();
+            }
+            if(view_database == "programi")
+            {
+                CallableStatement cstmt = con.prepareCall("{CALL delete_programi(?)}");
+                cstmt.setInt(1, izbranID);
+                cstmt.execute();
+                cstmt.close();
+            }  
+            if(view_database == "razredi")
+            {
+                CallableStatement cstmt = con.prepareCall("{CALL delete_razredi(?)}");
+                cstmt.setInt(1, izbranID);
+                cstmt.execute();
+                cstmt.close();
             }
             if(view_database == "kraji")
             {
-                ResultSet rs = st.executeQuery("DELETE FROM kraji WHERE id = '"+izbran_id+"'");
-                while (rs.next()) {
-                  collumn_count = rs.getInt(1);
-                   System.out.println(collumn_count);
-
-                }
+                CallableStatement cstmt = con.prepareCall("{CALL delete_kraji(?)}");
+                cstmt.setInt(1, izbranID);
+                cstmt.execute();
+                cstmt.close();                
             }
             con.close();
         }
