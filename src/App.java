@@ -26,6 +26,10 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.*;
+import javax.swing.*;
 
 import javax.swing.table.DefaultTableCellRenderer;
 //table
@@ -34,24 +38,20 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-
 public class App {
-    
+
     public static void main(String[] args) throws Exception {
-        //System.out.println("Hello");
+        // System.out.println("Hello");
         try {
             Class.forName("org.postgresql.Driver");
-        }
-        catch (java.lang.ClassNotFoundException e) {
+        } catch (java.lang.ClassNotFoundException e) {
             System.out.println(e.getMessage());
-            
+
         }
 
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-
-        
 
         try {
             Connection db = DriverManager.getConnection(url, username, password);
@@ -66,22 +66,18 @@ public class App {
             rs.close();
             st.close();
             db.close();
-            }
-        catch (java.sql.SQLException e) {
+        } catch (java.sql.SQLException e) {
             System.out.println(e.getMessage());
         }
 
-       
-    login_.LOGIN();
+        login_.LOGIN();
     }
 
-    
 }
 
+// login ui
+class login_ implements ActionListener {
 
-//login ui
-class login_ implements ActionListener{
-    
     public static JLabel userLabel;
     public static JTextField userText;
     public static JLabel passwordLabel;
@@ -106,22 +102,22 @@ class login_ implements ActionListener{
     public static JFrame razredi_frame;
     public static JTextField updateText;
 
-    //razredi update
+    // razredi update
     public JTextField razred_kraticaText;
     public JTextField program_idText;
     public JTextField dijaki_countText;
 
-    //program update
+    // program update
     public JTextField program_imeText;
     public JTextField opisText;
     public JTextField program_kraticaText;
 
-    //kraji update
+    // kraji update
     public JTextField kraj_imeText;
     public JTextField postaText;
     public JTextField podkrajText;
 
-    //dijaki update
+    // dijaki update
     public JTextField dijak_imeText;
     public JTextField priimekText;
     public JTextField datum_rojstvaText;
@@ -130,29 +126,27 @@ class login_ implements ActionListener{
     public JTextField razred_idText;
 
     public JButton update_Button;
-    
 
     static String view_database = "";
 
     String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
     String username = "ioztqmdz";
     String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-    
 
-    public static void LOGIN(){  
-               
+    public static void LOGIN() {
+
         JFrame frame = new JFrame("LOGIN");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel();  
-        panel.setBackground(new ColorUIResource(170,170,170));
+        JPanel panel = new JPanel();
+        panel.setBackground(new ColorUIResource(170, 170, 170));
         frame.add(panel);
         placeComponents(panel);
         frame.setPreferredSize(new Dimension(300, 160));
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
-        
+        frame.setResizable(false);
+
     }
 
     private static void placeComponents(JPanel panel) {
@@ -160,31 +154,30 @@ class login_ implements ActionListener{
         panel.setLayout(null);
 
         userLabel = new JLabel("User");
-        userLabel.setBounds(10,20,80,25);
+        userLabel.setBounds(10, 20, 80, 25);
         panel.add(userLabel);
 
         userText = new JTextField(20);
-        userText.setBounds(100,20,165,25);
+        userText.setBounds(100, 20, 165, 25);
         panel.add(userText);
 
-        
         passwordLabel = new JLabel("Password");
-        passwordLabel.setBounds(10,50,80,25);
+        passwordLabel.setBounds(10, 50, 80, 25);
         panel.add(passwordLabel);
 
         passwordText = new JPasswordField(20);
-        passwordText.setBounds(100,50,165,25);
+        passwordText.setBounds(100, 50, 165, 25);
         panel.add(passwordText);
 
-        LinkedList<Object> a=new LinkedList<Object>();
+        LinkedList<Object> a = new LinkedList<Object>();
         a.add(0.2);
         a.add(0.2);
-        a.add(new ColorUIResource(0,0,0));
-        a.add(new ColorUIResource(50,50,50));
-        a.add(new ColorUIResource(100,100,100));
-        a.add(new ColorUIResource(150,150,150));
-        a.add(new ColorUIResource(200,200,200));
-        UIManager.put("Button.gradient",a);
+        a.add(new ColorUIResource(0, 0, 0));
+        a.add(new ColorUIResource(50, 50, 50));
+        a.add(new ColorUIResource(100, 100, 100));
+        a.add(new ColorUIResource(150, 150, 150));
+        a.add(new ColorUIResource(200, 200, 200));
+        UIManager.put("Button.gradient", a);
         loginButton = new JButton("Login");
         loginButton.setBounds(180, 90, 80, 25);
         loginButton.setForeground(Color.white);
@@ -192,494 +185,476 @@ class login_ implements ActionListener{
         panel.add(loginButton);
 
         success = new JLabel("");
-        success.setBounds(30, 85,300, 25);
-        success.setForeground(new ColorUIResource(153,0,0));
+        success.setBounds(30, 85, 300, 25);
+        success.setForeground(new ColorUIResource(153, 0, 0));
         panel.add(success);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == loginButton)
-        {
+        if (e.getSource() == loginButton) {
             String user = userText.getText();
             String pass = passwordText.getText();
             try {
                 Connection db = DriverManager.getConnection(url, username, password);
-               // java.sql.Statement st = db.createStatement();
+                // java.sql.Statement st = db.createStatement();
                 CallableStatement cstmt = db.prepareCall("{?= CALL prijava(?, ?)}");
                 cstmt.registerOutParameter(1, Types.INTEGER);
                 cstmt.setString(2, user);
                 cstmt.setString(3, pass);
                 cstmt.execute();
                 Integer result = cstmt.getInt(1);
-               // System.out.println(result + "");
+                // System.out.println(result + "");
                 cstmt.close();
-                if(result == 1)
-                {
+                if (result == 1) {
                     menu();
-                }
-                else
-                {
+                } else {
                     success.setText("Prijava ni uspešna");
                 }
                 db.close();
-                }
-            catch (java.sql.SQLException exception) {
+            } catch (java.sql.SQLException exception) {
                 System.out.println(exception.getMessage());
             }
-            
-        }
-            
-        
 
-        else if(e.getSource() == razrediButton)
-        {
+        }
+
+        else if (e.getSource() == razrediButton) {
             view_database = "razredi";
             view();
         }
 
-        else if(e.getSource() == programiButton)
-        {
+        else if (e.getSource() == programiButton) {
             view_database = "programi";
             view();
         }
 
-        else if(e.getSource() == dijakiButton)
-        {
+        else if (e.getSource() == dijakiButton) {
             view_database = "dijaki";
             view();
         }
 
-        else if(e.getSource() == krajiButton)
-        {
+        else if (e.getSource() == krajiButton) {
             view_database = "kraji";
             view();
         }
 
-        else if(e.getSource() == logsButton)
-        {
+        else if (e.getSource() == logsButton) {
             view_database = "logs";
             view();
-        }
-        else if(e.getSource() == viewButton)
-        {
+        } else if (e.getSource() == viewButton) {
             view();
-        }
-        else if(e.getSource() == deleteButton)
-        {
+        } else if (e.getSource() == deleteButton) {
             delete();
-        }
-        else if(e.getSource() == DeleteButton)
-        {
+        } else if (e.getSource() == DeleteButton) {
             view();
-        }
-        else if(e.getSource() == editButton)
-        {
+        } else if (e.getSource() == editButton) {
             update();
-        }
-        else if(e.getSource() == insertButton)
-        {
+        } else if (e.getSource() == insertButton) {
             insert();
-        }
-        else
-        {
+        } else {
             System.out.println("button not in e.getsource");
-        }   
+        }
     }
-    public static void menu(){
+
+    public static void menu() {
         JFrame frame_menu = new JFrame("MENU");
         frame_menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel_menu = new JPanel();  
-        panel_menu.setBackground(new ColorUIResource(170,170,170));
+        JPanel panel_menu = new JPanel();
+        panel_menu.setBackground(new ColorUIResource(170, 170, 170));
         frame_menu.add(panel_menu);
         placeComponents_menu(panel_menu);
-        frame_menu.setPreferredSize(new Dimension(300, 200)); 
+        frame_menu.setPreferredSize(new Dimension(300, 200));
         frame_menu.pack();
         frame_menu.setLocationRelativeTo(null);
         frame_menu.setVisible(true);
+        frame_menu.setResizable(false);
     }
+
     private static void placeComponents_menu(JPanel panel_menu) {
         panel_menu.setLayout(null);
 
-        LinkedList<Object> a=new LinkedList<Object>();
+        LinkedList<Object> a = new LinkedList<Object>();
         a.add(0.2);
         a.add(0.2);
-        a.add(new ColorUIResource(0,0,0));
-        a.add(new ColorUIResource(50,50,50));
-        a.add(new ColorUIResource(100,100,100));
-        a.add(new ColorUIResource(150,150,150));
-        a.add(new ColorUIResource(200,200,200));
-        UIManager.put("Button.gradient",a);
+        a.add(new ColorUIResource(0, 0, 0));
+        a.add(new ColorUIResource(50, 50, 50));
+        a.add(new ColorUIResource(100, 100, 100));
+        a.add(new ColorUIResource(150, 150, 150));
+        a.add(new ColorUIResource(200, 200, 200));
+        UIManager.put("Button.gradient", a);
         razrediButton = new JButton("RAZREDI");
         razrediButton.setBounds(100, 10, 90, 27);
         razrediButton.setForeground(Color.white);
         razrediButton.addActionListener(new login_());
         panel_menu.add(razrediButton);
 
-        
-        UIManager.put("Button.gradient",a);
+        UIManager.put("Button.gradient", a);
         programiButton = new JButton("PROGRAMI");
         programiButton.setBounds(95, 40, 100, 27);
         programiButton.setForeground(Color.white);
         programiButton.addActionListener(new login_());
         panel_menu.add(programiButton);
 
-        UIManager.put("Button.gradient",a);
+        UIManager.put("Button.gradient", a);
         dijakiButton = new JButton("DIJAKI");
         dijakiButton.setBounds(100, 70, 90, 27);
-        dijakiButton.setForeground(Color.white);  
+        dijakiButton.setForeground(Color.white);
         dijakiButton.addActionListener(new login_());
         panel_menu.add(dijakiButton);
 
-        UIManager.put("Button.gradient",a);
+        UIManager.put("Button.gradient", a);
         krajiButton = new JButton("KRAJI");
         krajiButton.setBounds(100, 100, 90, 27);
-        krajiButton.setForeground(Color.white);  
+        krajiButton.setForeground(Color.white);
         krajiButton.addActionListener(new login_());
         panel_menu.add(krajiButton);
 
-        UIManager.put("Button.gradient",a);
+        UIManager.put("Button.gradient", a);
         logsButton = new JButton("LOGS");
         logsButton.setBounds(100, 130, 90, 27);
-        logsButton.setForeground(Color.white);  
+        logsButton.setForeground(Color.white);
         logsButton.addActionListener(new login_());
         panel_menu.add(logsButton);
     }/*
-    public static void razredi(){
-        JFrame frame_razredi = new JFrame("Razredi");
-        frame_razredi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel_razredi = new JPanel();  
-        panel_razredi.setBackground(new ColorUIResource(170,170,170));
-        frame_razredi.add(panel_razredi);
-        placeComponents_razredi(panel_razredi);
-        frame_razredi.setPreferredSize(new Dimension(300, 175)); 
-        frame_razredi.pack();
-        frame_razredi.setLocationRelativeTo(null);
-        frame_razredi.setVisible(true);
-    }
+      * public static void razredi(){
+      * JFrame frame_razredi = new JFrame("Razredi");
+      * frame_razredi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      * JPanel panel_razredi = new JPanel();
+      * panel_razredi.setBackground(new ColorUIResource(170,170,170));
+      * frame_razredi.add(panel_razredi);
+      * placeComponents_razredi(panel_razredi);
+      * frame_razredi.setPreferredSize(new Dimension(300, 175));
+      * frame_razredi.pack();
+      * frame_razredi.setLocationRelativeTo(null);
+      * frame_razredi.setVisible(true);
+      * }
+      * 
+      * private static void placeComponents_razredi(JPanel panel_razredi) {
+      * panel_razredi.setLayout(null);
+      * 
+      * LinkedList<Object> a=new LinkedList<Object>();
+      * a.add(0.2);
+      * a.add(0.2);
+      * a.add(new ColorUIResource(0,0,0));
+      * a.add(new ColorUIResource(50,50,50));
+      * a.add(new ColorUIResource(100,100,100));
+      * a.add(new ColorUIResource(150,150,150));
+      * a.add(new ColorUIResource(200,200,200));
+      * UIManager.put("Button.gradient",a);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * viewButton = new JButton("VIEW");
+      * viewButton.setBounds(100, 10, 90, 25);
+      * viewButton.setForeground(Color.white);
+      * viewButton.addActionListener(new login_());
+      * panel_razredi.add(viewButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * addButton = new JButton("ADD");
+      * addButton.setBounds(100, 40, 90, 25);
+      * addButton.setForeground(Color.white);
+      * addButton.addActionListener(new login_());
+      * panel_razredi.add(addButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * editButton = new JButton("EDIT");
+      * editButton.setBounds(100, 70, 90, 25);
+      * editButton.setForeground(Color.white);
+      * editButton.addActionListener(new login_());
+      * panel_razredi.add(editButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * DeleteButton = new JButton("DELETE");
+      * DeleteButton.setBounds(100, 100, 90, 25);
+      * DeleteButton.setForeground(Color.white);
+      * DeleteButton.addActionListener(new login_());
+      * panel_razredi.add(DeleteButton);
+      * }
+      * 
+      * public static void programi(){
+      * JFrame frame_programi = new JFrame("Programi");
+      * frame_programi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      * JPanel panel_programi = new JPanel();
+      * panel_programi.setBackground(new ColorUIResource(170,170,170));
+      * frame_programi.add(panel_programi);
+      * placeComponents_programi(panel_programi);
+      * frame_programi.setPreferredSize(new Dimension(300, 175));
+      * frame_programi.pack();
+      * frame_programi.setLocationRelativeTo(null);
+      * frame_programi.setVisible(true);
+      * }
+      * 
+      * private static void placeComponents_programi(JPanel panel_programi) {
+      * panel_programi.setLayout(null);
+      * 
+      * LinkedList<Object> a=new LinkedList<Object>();
+      * a.add(0.2);
+      * a.add(0.2);
+      * a.add(new ColorUIResource(0,0,0));
+      * a.add(new ColorUIResource(50,50,50));
+      * a.add(new ColorUIResource(100,100,100));
+      * a.add(new ColorUIResource(150,150,150));
+      * a.add(new ColorUIResource(200,200,200));
+      * UIManager.put("Button.gradient",a);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * viewButton = new JButton("VIEW");
+      * viewButton.setBounds(100, 10, 90, 25);
+      * viewButton.setForeground(Color.white);
+      * viewButton.addActionListener(new login_());
+      * panel_programi.add(viewButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * addButton = new JButton("ADD");
+      * addButton.setBounds(100, 40, 90, 25);
+      * addButton.setForeground(Color.white);
+      * addButton.addActionListener(new login_());
+      * panel_programi.add(addButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * editButton = new JButton("EDIT");
+      * editButton.setBounds(100, 70, 90, 25);
+      * editButton.setForeground(Color.white);
+      * editButton.addActionListener(new login_());
+      * panel_programi.add(editButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * DeleteButton = new JButton("DELETE");
+      * DeleteButton.setBounds(100, 100, 90, 25);
+      * DeleteButton.setForeground(Color.white);
+      * DeleteButton.addActionListener(new login_());
+      * panel_programi.add(DeleteButton);
+      * }
+      * 
+      * public static void dijaki(){
+      * JFrame frame_dijaki = new JFrame("Dijaki");
+      * frame_dijaki.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      * JPanel panel_dijaki = new JPanel();
+      * panel_dijaki.setBackground(new ColorUIResource(170,170,170));
+      * frame_dijaki.add(panel_dijaki);
+      * placeComponents_dijaki(panel_dijaki);
+      * frame_dijaki.setPreferredSize(new Dimension(300, 175));
+      * frame_dijaki.pack();
+      * frame_dijaki.setLocationRelativeTo(null);
+      * frame_dijaki.setVisible(true);
+      * }
+      * 
+      * private static void placeComponents_dijaki(JPanel panel_dijaki) {
+      * panel_dijaki.setLayout(null);
+      * 
+      * LinkedList<Object> a=new LinkedList<Object>();
+      * a.add(0.2);
+      * a.add(0.2);
+      * a.add(new ColorUIResource(0,0,0));
+      * a.add(new ColorUIResource(50,50,50));
+      * a.add(new ColorUIResource(100,100,100));
+      * a.add(new ColorUIResource(150,150,150));
+      * a.add(new ColorUIResource(200,200,200));
+      * UIManager.put("Button.gradient",a);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * viewButton = new JButton("VIEW");
+      * viewButton.setBounds(100, 10, 90, 25);
+      * viewButton.setForeground(Color.white);
+      * viewButton.addActionListener(new login_());
+      * panel_dijaki.add(viewButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * addButton = new JButton("ADD");
+      * addButton.setBounds(100, 40, 90, 25);
+      * addButton.setForeground(Color.white);
+      * addButton.addActionListener(new login_());
+      * panel_dijaki.add(addButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * editButton = new JButton("EDIT");
+      * editButton.setBounds(100, 70, 90, 25);
+      * editButton.setForeground(Color.white);
+      * editButton.addActionListener(new login_());
+      * panel_dijaki.add(editButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * DeleteButton = new JButton("DELETE");
+      * DeleteButton.setBounds(100, 100, 90, 25);
+      * DeleteButton.setForeground(Color.white);
+      * DeleteButton.addActionListener(new login_());
+      * panel_dijaki.add(DeleteButton);
+      * }
+      * 
+      * public static void kraji(){
+      * JFrame frame_kraji = new JFrame("Kraji");
+      * frame_kraji.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      * JPanel panel_kraji = new JPanel();
+      * panel_kraji.setBackground(new ColorUIResource(170,170,170));
+      * frame_kraji.add(panel_kraji);
+      * placeComponents_kraji(panel_kraji);
+      * frame_kraji.setPreferredSize(new Dimension(300, 175));
+      * frame_kraji.pack();
+      * frame_kraji.setLocationRelativeTo(null);
+      * frame_kraji.setVisible(true);
+      * }
+      * 
+      * private static void placeComponents_kraji(JPanel panel_kraji) {
+      * panel_kraji.setLayout(null);
+      * 
+      * LinkedList<Object> a=new LinkedList<Object>();
+      * a.add(0.2);
+      * a.add(0.2);
+      * a.add(new ColorUIResource(0,0,0));
+      * a.add(new ColorUIResource(50,50,50));
+      * a.add(new ColorUIResource(100,100,100));
+      * a.add(new ColorUIResource(150,150,150));
+      * a.add(new ColorUIResource(200,200,200));
+      * UIManager.put("Button.gradient",a);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * viewButton = new JButton("VIEW");
+      * viewButton.setBounds(100, 10, 90, 25);
+      * viewButton.setForeground(Color.white);
+      * viewButton.addActionListener(new login_());
+      * panel_kraji.add(viewButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * addButton = new JButton("ADD");
+      * addButton.setBounds(100, 40, 90, 25);
+      * addButton.setForeground(Color.white);
+      * addButton.addActionListener(new login_());
+      * panel_kraji.add(addButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * editButton = new JButton("EDIT");
+      * editButton.setBounds(100, 70, 90, 25);
+      * editButton.setForeground(Color.white);
+      * editButton.addActionListener(new login_());
+      * panel_kraji.add(editButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * DeleteButton = new JButton("DELETE");
+      * DeleteButton.setBounds(100, 100, 90, 25);
+      * DeleteButton.setForeground(Color.white);
+      * DeleteButton.addActionListener(new login_());
+      * panel_kraji.add(DeleteButton);
+      * }
+      * 
+      * public static void logs(){
+      * JFrame frame_logs = new JFrame("Logs");
+      * frame_logs.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      * JPanel panel_logs = new JPanel();
+      * panel_logs.setBackground(new ColorUIResource(170,170,170));
+      * frame_logs.add(panel_logs);
+      * placeComponents_logs(panel_logs);
+      * frame_logs.setPreferredSize(new Dimension(300, 175));
+      * frame_logs.pack();
+      * frame_logs.setLocationRelativeTo(null);
+      * frame_logs.setVisible(true);
+      * }
+      * 
+      * private static void placeComponents_logs(JPanel panel_logs) {
+      * panel_logs.setLayout(null);
+      * 
+      * LinkedList<Object> a=new LinkedList<Object>();
+      * a.add(0.2);
+      * a.add(0.2);
+      * a.add(new ColorUIResource(0,0,0));
+      * a.add(new ColorUIResource(50,50,50));
+      * a.add(new ColorUIResource(100,100,100));
+      * a.add(new ColorUIResource(150,150,150));
+      * a.add(new ColorUIResource(200,200,200));
+      * UIManager.put("Button.gradient",a);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * viewButton = new JButton("VIEW");
+      * viewButton.setBounds(100, 10, 90, 25);
+      * viewButton.setForeground(Color.white);
+      * viewButton.addActionListener(new login_());
+      * panel_logs.add(viewButton);
+      * 
+      * 
+      * UIManager.put("Button.gradient",a);
+      * editButton = new JButton("EDIT");
+      * editButton.setBounds(100, 40, 90, 25);
+      * editButton.setForeground(Color.white);
+      * editButton.addActionListener(new login_());
+      * panel_logs.add(editButton);
+      * 
+      * UIManager.put("Button.gradient",a);
+      * DeleteButton = new JButton("DELETE");
+      * DeleteButton.setBounds(100, 70, 90, 25);
+      * DeleteButton.setForeground(Color.white);
+      * DeleteButton.addActionListener(new login_());
+      * panel_logs.add(DeleteButton);
+      * }
+      */
 
-    private static void placeComponents_razredi(JPanel panel_razredi) {
-        panel_razredi.setLayout(null);
+    public String izbran_id;
+    public int j = 0;
 
-        LinkedList<Object> a=new LinkedList<Object>();
-        a.add(0.2);
-        a.add(0.2);
-        a.add(new ColorUIResource(0,0,0));
-        a.add(new ColorUIResource(50,50,50));
-        a.add(new ColorUIResource(100,100,100));
-        a.add(new ColorUIResource(150,150,150));
-        a.add(new ColorUIResource(200,200,200));
-        UIManager.put("Button.gradient",a);
-        
-        UIManager.put("Button.gradient",a);
-        viewButton = new JButton("VIEW");
-        viewButton.setBounds(100, 10, 90, 25);
-        viewButton.setForeground(Color.white);
-        viewButton.addActionListener(new login_());
-        panel_razredi.add(viewButton);
-
-        UIManager.put("Button.gradient",a);
-        addButton = new JButton("ADD");
-        addButton.setBounds(100, 40, 90, 25);
-        addButton.setForeground(Color.white);  
-        addButton.addActionListener(new login_());
-        panel_razredi.add(addButton);
-
-        UIManager.put("Button.gradient",a);
-        editButton = new JButton("EDIT");
-        editButton.setBounds(100, 70, 90, 25);
-        editButton.setForeground(Color.white);  
-        editButton.addActionListener(new login_());
-        panel_razredi.add(editButton);
-
-        UIManager.put("Button.gradient",a);
-        DeleteButton = new JButton("DELETE");
-        DeleteButton.setBounds(100, 100, 90, 25);
-        DeleteButton.setForeground(Color.white);  
-        DeleteButton.addActionListener(new login_());
-        panel_razredi.add(DeleteButton);
-    }
-
-    public static void programi(){
-        JFrame frame_programi = new JFrame("Programi");
-        frame_programi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel_programi = new JPanel();  
-        panel_programi.setBackground(new ColorUIResource(170,170,170));
-        frame_programi.add(panel_programi);
-        placeComponents_programi(panel_programi);
-        frame_programi.setPreferredSize(new Dimension(300, 175)); 
-        frame_programi.pack();
-        frame_programi.setLocationRelativeTo(null);
-        frame_programi.setVisible(true);
-    }
-
-    private static void placeComponents_programi(JPanel panel_programi) {
-        panel_programi.setLayout(null);
-
-        LinkedList<Object> a=new LinkedList<Object>();
-        a.add(0.2);
-        a.add(0.2);
-        a.add(new ColorUIResource(0,0,0));
-        a.add(new ColorUIResource(50,50,50));
-        a.add(new ColorUIResource(100,100,100));
-        a.add(new ColorUIResource(150,150,150));
-        a.add(new ColorUIResource(200,200,200));
-        UIManager.put("Button.gradient",a);
-        
-        UIManager.put("Button.gradient",a);
-        viewButton = new JButton("VIEW");
-        viewButton.setBounds(100, 10, 90, 25);
-        viewButton.setForeground(Color.white);
-        viewButton.addActionListener(new login_());
-        panel_programi.add(viewButton);
-
-        UIManager.put("Button.gradient",a);
-        addButton = new JButton("ADD");
-        addButton.setBounds(100, 40, 90, 25);
-        addButton.setForeground(Color.white);  
-        addButton.addActionListener(new login_());
-        panel_programi.add(addButton);
-
-        UIManager.put("Button.gradient",a);
-        editButton = new JButton("EDIT");
-        editButton.setBounds(100, 70, 90, 25);
-        editButton.setForeground(Color.white);  
-        editButton.addActionListener(new login_());
-        panel_programi.add(editButton);
-
-        UIManager.put("Button.gradient",a);
-        DeleteButton = new JButton("DELETE");
-        DeleteButton.setBounds(100, 100, 90, 25);
-        DeleteButton.setForeground(Color.white);  
-        DeleteButton.addActionListener(new login_());
-        panel_programi.add(DeleteButton);
-    }
-
-    public static void dijaki(){
-        JFrame frame_dijaki = new JFrame("Dijaki");
-        frame_dijaki.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel_dijaki = new JPanel();  
-        panel_dijaki.setBackground(new ColorUIResource(170,170,170));
-        frame_dijaki.add(panel_dijaki);
-        placeComponents_dijaki(panel_dijaki);
-        frame_dijaki.setPreferredSize(new Dimension(300, 175)); 
-        frame_dijaki.pack();
-        frame_dijaki.setLocationRelativeTo(null);
-        frame_dijaki.setVisible(true);
-    }
-
-    private static void placeComponents_dijaki(JPanel panel_dijaki) {
-        panel_dijaki.setLayout(null);
-
-        LinkedList<Object> a=new LinkedList<Object>();
-        a.add(0.2);
-        a.add(0.2);
-        a.add(new ColorUIResource(0,0,0));
-        a.add(new ColorUIResource(50,50,50));
-        a.add(new ColorUIResource(100,100,100));
-        a.add(new ColorUIResource(150,150,150));
-        a.add(new ColorUIResource(200,200,200));
-        UIManager.put("Button.gradient",a);
-        
-        UIManager.put("Button.gradient",a);
-        viewButton = new JButton("VIEW");
-        viewButton.setBounds(100, 10, 90, 25);
-        viewButton.setForeground(Color.white);
-        viewButton.addActionListener(new login_());
-        panel_dijaki.add(viewButton);
-
-        UIManager.put("Button.gradient",a);
-        addButton = new JButton("ADD");
-        addButton.setBounds(100, 40, 90, 25);
-        addButton.setForeground(Color.white);  
-        addButton.addActionListener(new login_());
-        panel_dijaki.add(addButton);
-
-        UIManager.put("Button.gradient",a);
-        editButton = new JButton("EDIT");
-        editButton.setBounds(100, 70, 90, 25);
-        editButton.setForeground(Color.white);  
-        editButton.addActionListener(new login_());
-        panel_dijaki.add(editButton);
-
-        UIManager.put("Button.gradient",a);
-        DeleteButton = new JButton("DELETE");
-        DeleteButton.setBounds(100, 100, 90, 25);
-        DeleteButton.setForeground(Color.white);  
-        DeleteButton.addActionListener(new login_());
-        panel_dijaki.add(DeleteButton);
-    }
-
-    public static void kraji(){
-        JFrame frame_kraji = new JFrame("Kraji");
-        frame_kraji.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel_kraji = new JPanel();  
-        panel_kraji.setBackground(new ColorUIResource(170,170,170));
-        frame_kraji.add(panel_kraji);
-        placeComponents_kraji(panel_kraji);
-        frame_kraji.setPreferredSize(new Dimension(300, 175)); 
-        frame_kraji.pack();
-        frame_kraji.setLocationRelativeTo(null);
-        frame_kraji.setVisible(true);
-    }
-
-    private static void placeComponents_kraji(JPanel panel_kraji) {
-        panel_kraji.setLayout(null);
-
-        LinkedList<Object> a=new LinkedList<Object>();
-        a.add(0.2);
-        a.add(0.2);
-        a.add(new ColorUIResource(0,0,0));
-        a.add(new ColorUIResource(50,50,50));
-        a.add(new ColorUIResource(100,100,100));
-        a.add(new ColorUIResource(150,150,150));
-        a.add(new ColorUIResource(200,200,200));
-        UIManager.put("Button.gradient",a);
-        
-        UIManager.put("Button.gradient",a);
-        viewButton = new JButton("VIEW");
-        viewButton.setBounds(100, 10, 90, 25);
-        viewButton.setForeground(Color.white);
-        viewButton.addActionListener(new login_());
-        panel_kraji.add(viewButton);
-
-        UIManager.put("Button.gradient",a);
-        addButton = new JButton("ADD");
-        addButton.setBounds(100, 40, 90, 25);
-        addButton.setForeground(Color.white);  
-        addButton.addActionListener(new login_());
-        panel_kraji.add(addButton);
-
-        UIManager.put("Button.gradient",a);
-        editButton = new JButton("EDIT");
-        editButton.setBounds(100, 70, 90, 25);
-        editButton.setForeground(Color.white);  
-        editButton.addActionListener(new login_());
-        panel_kraji.add(editButton);
-
-        UIManager.put("Button.gradient",a);
-        DeleteButton = new JButton("DELETE");
-        DeleteButton.setBounds(100, 100, 90, 25);
-        DeleteButton.setForeground(Color.white);  
-        DeleteButton.addActionListener(new login_());
-        panel_kraji.add(DeleteButton);
-    }
-
-    public static void logs(){
-        JFrame frame_logs = new JFrame("Logs");
-        frame_logs.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel_logs = new JPanel();  
-        panel_logs.setBackground(new ColorUIResource(170,170,170));
-        frame_logs.add(panel_logs);
-        placeComponents_logs(panel_logs);
-        frame_logs.setPreferredSize(new Dimension(300, 175)); 
-        frame_logs.pack();
-        frame_logs.setLocationRelativeTo(null);
-        frame_logs.setVisible(true);
-    }
-
-    private static void placeComponents_logs(JPanel panel_logs) {
-        panel_logs.setLayout(null);
-
-        LinkedList<Object> a=new LinkedList<Object>();
-        a.add(0.2);
-        a.add(0.2);
-        a.add(new ColorUIResource(0,0,0));
-        a.add(new ColorUIResource(50,50,50));
-        a.add(new ColorUIResource(100,100,100));
-        a.add(new ColorUIResource(150,150,150));
-        a.add(new ColorUIResource(200,200,200));
-        UIManager.put("Button.gradient",a);
-        
-        UIManager.put("Button.gradient",a);
-        viewButton = new JButton("VIEW");
-        viewButton.setBounds(100, 10, 90, 25);
-        viewButton.setForeground(Color.white);
-        viewButton.addActionListener(new login_());
-        panel_logs.add(viewButton);
-
-        
-        UIManager.put("Button.gradient",a);
-        editButton = new JButton("EDIT");
-        editButton.setBounds(100, 40, 90, 25);
-        editButton.setForeground(Color.white);  
-        editButton.addActionListener(new login_());
-        panel_logs.add(editButton);
-
-        UIManager.put("Button.gradient",a);
-        DeleteButton = new JButton("DELETE");
-        DeleteButton.setBounds(100, 70, 90, 25);
-        DeleteButton.setForeground(Color.white);  
-        DeleteButton.addActionListener(new login_());
-        panel_logs.add(DeleteButton);
-    }*/
-
-public String izbran_id;
-
-    public void view(){
+    public void view() {
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
         int collumn_count = 0;
-        
+
         try {
             Connection con = DriverManager.getConnection(url, username, password);
-            
+
             java.sql.Statement st = con.createStatement();
-            
-            if(view_database == "razredi")
-            {
-                String query = "SELECT * FROM razredi ORDER BY id";
+
+            if (view_database == "razredi") {
+                String query = "SELECT view_razredi()";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
 
-                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM razredi");
-                while (rs.next()) {
-                    collumn_count = rs.getInt(1);
-                    System.out.println(collumn_count);
-                }
+                CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_razredi()}");
+                cstmt.registerOutParameter(1, Types.INTEGER);
+                cstmt.execute();
+                collumn_count = cstmt.getInt(1);
+                cstmt.close();
 
-                String columns[] = { "id", "kratica", "program_id", "dijaki_count" };
+                String columns[] = { "ID", "kratica", "program id", "dijaki count" };
                 String data[][] = new String[collumn_count][5];
 
                 int i = 0;
                 while (res.next()) {
-                    int id = res.getInt("id");
-                    String kratica = res.getString("kratica");
-                    String program_id = res.getString("program_id");
-                    int dijaki_count = res.getInt("dijaki_count");
-                    
-                    data[i][0] = id + "";
-                    data[i][1] = kratica;
-                    data[i][2] = program_id;
-                    data[i][3] = dijaki_count + "";
+
+                    String x = res.getString(1);
+
+                    x = x.replace("(", "");
+                    x = x.replace(")", "");
+                    String parts[];
+                    parts = x.split(",");
+                    data[i][0] = parts[0];
+                    data[i][1] = parts[1];
+                    data[i][2] = parts[2];
+                    data[i][3] = parts[3];
                     i++;
                 }
+                j++;
                 DefaultTableModel model = new DefaultTableModel(data, columns);
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
                 table.setRowHeight(20);
                 table.setPreferredSize(new Dimension(450, 500));
-                
-                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
                 dtcr.setHorizontalTextPosition(DefaultTableCellRenderer.CENTER);
-                table.setBounds(500,400,450, 500);
+                table.setBounds(500, 400, 450, 500);
                 JScrollPane pane = new JScrollPane(table);
                 razredi_frame = new JFrame("RAZREDI VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
-              //panel.add(table);
+                // panel.add(table);
 
-              JLabel deleteLabel = new JLabel("Insert ID to delete");
-              deleteLabel.setBounds(10,300,100,25);
-              panel.add(deleteLabel);
+                JLabel deleteLabel = new JLabel("Insert ID to delete");
+                deleteLabel.setBounds(10, 300, 100, 25);
+                panel.add(deleteLabel);
 
-              deleteText = new JTextField(20);
-              deleteText.setBounds(100,300,165,25);
-              panel.add(deleteText);
+                deleteText = new JTextField(20);
+                deleteText.setBounds(100, 300, 165, 25);
+                panel.add(deleteText);
 
                 deleteButton = new JButton("DELETE");
                 deleteButton.setBounds(280, 300, 90, 25);
@@ -688,12 +663,12 @@ public String izbran_id;
                 panel.add(deleteButton);
 
                 JLabel updateLabel = new JLabel("Insert ID to update");
-                updateLabel.setBounds(10,350,100,25);
-              panel.add(updateLabel);
+                updateLabel.setBounds(10, 350, 100, 25);
+                panel.add(updateLabel);
 
-              updateText = new JTextField(20);
-              updateText.setBounds(100,350,165,25);
-              panel.add(updateText);
+                updateText = new JTextField(20);
+                updateText.setBounds(100, 350, 165, 25);
+                panel.add(updateText);
 
                 editButton = new JButton("EDIT");
                 editButton.setBounds(100, 350, 100, 25);
@@ -702,8 +677,8 @@ public String izbran_id;
                 panel.add(editButton);
 
                 JLabel insertLabel = new JLabel("Insert new razred");
-                insertLabel.setBounds(10,350,100,25);
-              panel.add(insertLabel);
+                insertLabel.setBounds(10, 350, 100, 25);
+                panel.add(insertLabel);
 
                 insertButton = new JButton("INSERT");
                 insertButton.setBounds(100, 400, 100, 25);
@@ -711,50 +686,57 @@ public String izbran_id;
                 insertButton.setForeground(Color.white);
                 panel.add(insertButton);
 
-                //panel.setLayout(null);
+                // panel.setLayout(null);
                 razredi_frame.add(panel);
                 razredi_frame.setSize(500, 600);
                 razredi_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 razredi_frame.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(1);
-                
-                
+
+                //razredi_frame.addComponentListener(new FrameListner());
+
+                razredi_frame.setResizable(false);
+
             }
-            
-        
-            if(view_database == "programi")
-            {
-                String query = "SELECT * FROM programi ORDER BY id";
+
+            if (view_database == "programi") {
+                String query = "SELECT view_programi()";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
-                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM programi");
-                while (rs.next()) {
-                    collumn_count = rs.getInt(1);
-                    System.out.println(collumn_count);
-                }
-                String columns[] = { "id", "ime", "opis", "kratica" };
-                String data[][] = new String[collumn_count][4];
+
+                CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_programi()}");
+                cstmt.registerOutParameter(1, Types.INTEGER);
+                cstmt.execute();
+                collumn_count = cstmt.getInt(1);
+                cstmt.close();
+
+                String columns[] = { "ID", "ime", "opis", "kratica" };
+                String data[][] = new String[collumn_count][5];
 
                 int i = 0;
                 while (res.next()) {
-                    int id = res.getInt("id");
-                    String ime = res.getString("ime");
-                    String opis = res.getString("opis");
-                    String kratica = res.getString("kratica");
-                    data[i][0] = id + "";
-                    data[i][1] = ime;
-                    data[i][2] = opis;
-                    data[i][3] = kratica;
+
+                    String x = res.getString(1);
+
+                    x = x.replace("(", "");
+                    x = x.replace(")", "");
+                    String parts[];
+                    parts = x.split(",");
+                    data[i][0] = parts[0];
+                    data[i][1] = parts[1];
+                    data[i][2] = parts[2];
+                    data[i][3] = parts[3];
                     i++;
                 }
+                j++;
                 DefaultTableModel model = new DefaultTableModel(data, columns);
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
                 table.setRowHeight(20);
                 table.setPreferredSize(new Dimension(450, 500));
-                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("PROGRAMI VIEW");
                 JPanel panel = new JPanel();
@@ -766,12 +748,12 @@ public String izbran_id;
                 table.getColumnModel().getColumn(0).setPreferredWidth(5);
 
                 JLabel deleteLabel = new JLabel("Insert ID to delete");
-              deleteLabel.setBounds(10,20,80,25);
-              panel.add(deleteLabel);
+                deleteLabel.setBounds(10, 20, 80, 25);
+                panel.add(deleteLabel);
 
-              deleteText = new JTextField(20);
-              deleteText.setBounds(100,20,165,25);
-              panel.add(deleteText);
+                deleteText = new JTextField(20);
+                deleteText.setBounds(100, 20, 165, 25);
+                panel.add(deleteText);
 
                 deleteButton = new JButton("DELETE");
                 deleteButton.setBounds(1000, 1000, 90, 25);
@@ -780,60 +762,64 @@ public String izbran_id;
                 panel.add(deleteButton);
 
                 JLabel updateLabel = new JLabel("Insert ID to update");
-                updateLabel.setBounds(10,20,80,25);
-              panel.add(updateLabel);
+                updateLabel.setBounds(10, 20, 80, 25);
+                panel.add(updateLabel);
 
-              updateText = new JTextField(20);
-              updateText.setBounds(100,20,165,25);
-              panel.add(updateText);
+                updateText = new JTextField(20);
+                updateText.setBounds(100, 20, 165, 25);
+                panel.add(updateText);
 
                 editButton = new JButton("EDIT");
                 editButton.setBounds(1000, 1000, 90, 25);
                 editButton.addActionListener(new login_());
                 editButton.setForeground(Color.white);
                 panel.add(editButton);
+                f.setResizable(false);
             }
-            if(view_database == "dijaki")
-            {
-                String query = "SELECT * FROM dijaki ORDER BY id";
+            if (view_database == "dijaki") {
+                String query = "SELECT view_dijaki()";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
-                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM dijaki");
-                while (rs.next()) {
-                    collumn_count = rs.getInt(1);
-                    System.out.println(collumn_count);
-                }
-                String columns[] = { "id", "ime", "priimek", "datum_rojstva", "spol", "kraj_id", "razred_id" };
+
+                CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_dijaki()}");
+                cstmt.registerOutParameter(1, Types.INTEGER);
+                cstmt.execute();
+                collumn_count = cstmt.getInt(1);
+                cstmt.close();
+
+                String columns[] = { "ID", "ime", "priimek", "datum rojstva", "spol", "kraj ID", "razred ID" };
                 String data[][] = new String[collumn_count][7];
 
                 int i = 0;
                 while (res.next()) {
-                    int id = res.getInt("id");
-                    String ime = res.getString("ime");
-                    String priimek = res.getString("priimek");
-                    String datum_rojstva = res.getString("datum_rojstva").replace("00:00:00", "");
-                    String spol = res.getString("spol");
-                    int kraj_id = res.getInt("kraj_id");
-                    int razred_id = res.getInt("razred_id");
 
-                    data[i][0] = id + "";
-                    data[i][1] = ime;
-                    data[i][2] = priimek;
-                    data[i][3] = datum_rojstva;
-                    data[i][4] = spol;
-                    data[i][5] = kraj_id + "";
-                    data[i][6] = razred_id + "";
+                    String x = res.getString(1);
+
+                    x = x.replace("(", "");
+                    x = x.replace(")", "");
+                    String parts[];
+                    parts = x.split(",");
+
+                    for (int e = 0; e < 7; e++) {
+                        if (e == 3) {
+                            data[i][e] = parts[e].substring(1, parts[e].indexOf(" "));
+
+                        } else {
+                            data[i][e] = parts[e];
+                        }
+                    }
                     i++;
                 }
+                j++;
                 DefaultTableModel model = new DefaultTableModel(data, columns);
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
                 table.setRowHeight(20);
                 table.setPreferredSize(new Dimension(450, 500));
-                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
-                
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("DIJAKI VIEW");
                 JPanel panel = new JPanel();
@@ -843,15 +829,15 @@ public String izbran_id;
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(5);
-                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
                 JLabel deleteLabel = new JLabel("Insert ID to delete");
-              deleteLabel.setBounds(10,20,80,25);
-              panel.add(deleteLabel);
+                deleteLabel.setBounds(10, 20, 80, 25);
+                panel.add(deleteLabel);
 
-              deleteText = new JTextField(20);
-              deleteText.setBounds(100,20,165,25);
-              panel.add(deleteText);
+                deleteText = new JTextField(20);
+                deleteText.setBounds(100, 20, 165, 25);
+                panel.add(deleteText);
 
                 deleteButton = new JButton("DELETE");
                 deleteButton.setBounds(1000, 1000, 90, 25);
@@ -860,23 +846,22 @@ public String izbran_id;
                 panel.add(deleteButton);
 
                 JLabel updateLabel = new JLabel("Insert ID to update");
-                updateLabel.setBounds(10,20,80,25);
-              panel.add(updateLabel);
+                updateLabel.setBounds(10, 20, 80, 25);
+                panel.add(updateLabel);
 
-              updateText = new JTextField(20);
-              updateText.setBounds(100,20,165,25);
-              panel.add(updateText);
+                updateText = new JTextField(20);
+                updateText.setBounds(100, 20, 165, 25);
+                panel.add(updateText);
 
                 editButton = new JButton("EDIT");
                 editButton.setBounds(1000, 1000, 90, 25);
                 editButton.addActionListener(new login_());
                 editButton.setForeground(Color.white);
                 panel.add(editButton);
- 
+                f.setResizable(false);
 
             }
-            if(view_database == "kraji")
-            {
+            if (view_database == "kraji") {
                 String query = "SELECT * FROM kraji ORDER BY id";
 
                 Statement stm = con.createStatement();
@@ -906,8 +891,8 @@ public String izbran_id;
                 table.setShowGrid(true);
                 table.setShowVerticalLines(true);
                 table.setRowHeight(20);
-                //table.setPreferredSize(new Dimension(450, 500));
-                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+                // table.setPreferredSize(new Dimension(450, 500));
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("KRAJI VIEW");
                 JPanel panel = new JPanel();
@@ -916,15 +901,15 @@ public String izbran_id;
                 f.setSize(500, 600);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-                //table.getColumnModel().getColumn(0).setPreferredWidth(5);
+                // table.getColumnModel().getColumn(0).setPreferredWidth(5);
 
                 JLabel deleteLabel = new JLabel("Insert ID to delete");
-              deleteLabel.setBounds(10,20,80,25);
-              panel.add(deleteLabel);
+                deleteLabel.setBounds(10, 20, 80, 25);
+                panel.add(deleteLabel);
 
-              deleteText = new JTextField(20);
-              deleteText.setBounds(100,20,165,25);
-              panel.add(deleteText);
+                deleteText = new JTextField(20);
+                deleteText.setBounds(100, 20, 165, 25);
+                panel.add(deleteText);
 
                 deleteButton = new JButton("DELETE");
                 deleteButton.setBounds(1000, 1000, 90, 25);
@@ -933,57 +918,56 @@ public String izbran_id;
                 panel.add(deleteButton);
 
                 JLabel updateLabel = new JLabel("Insert ID to update");
-                updateLabel.setBounds(10,20,80,25);
-              panel.add(updateLabel);
+                updateLabel.setBounds(10, 20, 80, 25);
+                panel.add(updateLabel);
 
-              updateText = new JTextField(20);
-              updateText.setBounds(100,20,165,25);
-              panel.add(updateText);
+                updateText = new JTextField(20);
+                updateText.setBounds(100, 20, 165, 25);
+                panel.add(updateText);
 
                 editButton = new JButton("EDIT");
                 editButton.setBounds(1000, 1000, 90, 25);
                 editButton.addActionListener(new login_());
                 editButton.setForeground(Color.white);
                 panel.add(editButton);
+                f.setResizable(false);
             }
-            if(view_database == "logs")
-            {
-                String query = "SELECT * FROM dijaki_logs ORDER BY id";
+            if (view_database == "logs") {
+                String query = "SELECT view_dijaki()";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
-                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM dijaki_logs");
-                while (rs.next()) {
-                    collumn_count = rs.getInt(1);
-                    System.out.println(collumn_count);
-                }
-                String columns[] = { "id", "ime", "priimek", "datum_rojstva", "spol", "kraj_id", "razred_id", "datum_spremembe", "dijak_id", "tip_spremembe" };
-                String data[][] = new String[collumn_count][10];
+
+                CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_dijaki()}");
+                cstmt.registerOutParameter(1, Types.INTEGER);
+                cstmt.execute();
+                collumn_count = cstmt.getInt(1);
+                cstmt.close();
+
+                String columns[] = { "ID", "ime", "priimek", "datum rojstva", "spol", "kraj ID", "razred ID" };
+                String data[][] = new String[collumn_count][7];
 
                 int i = 0;
                 while (res.next()) {
-                    int id = res.getInt("id");
-                    String ime = res.getString("ime");
-                    String priimek = res.getString("priimek");
-                    String datum_rojstva = res.getString("datum_rojstva");
-                    String spol = res.getString("spol");
-                    int kraj_id = res.getInt("kraj_id");
-                    int razred_id = res.getInt("razred_id");
-                    String datum_spremembe = res.getString("datum_spremembe");
-                    int dijak_id = res.getInt("dijak_id");
-                    String tip_spremembe = res.getString("tip_spremebe");
-                    data[i][0] = id + "";
-                    data[i][1] = ime;
-                    data[i][2] = priimek;
-                    data[i][3] = datum_rojstva;
-                    data[i][4] = spol;
-                    data[i][5] = kraj_id + "";
-                    data[i][6] = razred_id + "";
-                    data[i][7] = datum_spremembe;
-                    data[i][8] = dijak_id + "";
-                    data[i][9] = tip_spremembe;
+
+                    String x = res.getString(1);
+
+                    x = x.replace("(", "");
+                    x = x.replace(")", "");
+                    String parts[];
+                    parts = x.split(",");
+
+                    for (int e = 0; e < 7; e++) {
+                        if (e == 3) {
+                            data[i][e] = parts[e].substring(1, parts[e].indexOf(" "));
+
+                        } else {
+                            data[i][e] = parts[e];
+                        }
+                    }
                     i++;
                 }
+                j++;
                 DefaultTableModel model = new DefaultTableModel(data, columns);
                 JTable table = new JTable(model);
                 table.setShowGrid(true);
@@ -991,7 +975,7 @@ public String izbran_id;
                 table.setRowHeight(20);
                 table.setRowHeight(20);
                 table.setPreferredSize(new Dimension(450, 500));
-                table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 JScrollPane pane = new JScrollPane(table);
                 JFrame f = new JFrame("LOGS VIEW");
                 JPanel panel = new JPanel();
@@ -1005,510 +989,512 @@ public String izbran_id;
                 table.getColumnModel().getColumn(6).setPreferredWidth(25);
 
                 JLabel deleteLabel = new JLabel("Insert ID to delete");
-              deleteLabel.setBounds(10,20,80,25);
-              panel.add(deleteLabel);
+                deleteLabel.setBounds(10, 20, 80, 25);
+                panel.add(deleteLabel);
 
-              deleteText = new JTextField(20);
-              deleteText.setBounds(100,20,165,25);
-              panel.add(deleteText);
+                deleteText = new JTextField(20);
+                deleteText.setBounds(100, 20, 165, 25);
+                panel.add(deleteText);
 
                 deleteButton = new JButton("DELETE");
                 deleteButton.setBounds(1000, 1000, 90, 25);
                 deleteButton.addActionListener(new login_());
                 deleteButton.setForeground(Color.white);
                 panel.add(deleteButton);
-                
+                f.setResizable(false);
+
             }
             con.close();
         }
-            
+
         catch (java.sql.SQLException e) {
             System.out.println(e.getMessage());
-        
+
         }
     }
-    
 
-    
-    public void delete()
-    {
+    public void delete() {
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-        
+
         izbran_id = deleteText.getText();
         int izbranID = Integer.valueOf(izbran_id);
 
         try {
-            Connection con = DriverManager.getConnection(url, username, password);       
-            
-            if(view_database == "dijaki")
-            {
+            Connection con = DriverManager.getConnection(url, username, password);
+
+            if (view_database == "dijaki") {
                 CallableStatement cstmt = con.prepareCall("{CALL delete_dijaki(?)}");
                 cstmt.setInt(1, izbranID);
                 cstmt.execute();
                 cstmt.close();
             }
-            if(view_database == "programi")
-            {
+            if (view_database == "programi") {
                 CallableStatement cstmt = con.prepareCall("{CALL delete_programi(?)}");
                 cstmt.setInt(1, izbranID);
                 cstmt.execute();
                 cstmt.close();
-            }  
-            if(view_database == "razredi")
-            {
+            }
+            if (view_database == "razredi") {
                 CallableStatement cstmt = con.prepareCall("{CALL delete_razredi(?)}");
                 cstmt.setInt(1, izbranID);
                 cstmt.execute();
                 cstmt.close();
             }
-            if(view_database == "kraji")
-            {
+            if (view_database == "kraji") {
                 CallableStatement cstmt = con.prepareCall("{CALL delete_kraji(?)}");
                 cstmt.setInt(1, izbranID);
                 cstmt.execute();
-                cstmt.close();                
+                cstmt.close();
             }
             con.close();
         }
-            
+
         catch (java.sql.SQLException e) {
             System.out.println(e.getMessage());
+        }
+        view();
     }
-    view();
-    }
 
-    public void update()
-    {
-        if(view_database == "razredi")
-            {
-        JFrame frame_update = new JFrame("razredi edit");
-        frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel_razredi = new JPanel();  
-        panel_razredi.setBackground(new ColorUIResource(170,170,170));
-        
+    public void update() {
+        if (view_database == "razredi") {
+            JFrame frame_update = new JFrame("razredi edit");
+            frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JPanel panel_razredi = new JPanel();
+            panel_razredi.setBackground(new ColorUIResource(170, 170, 170));
 
-                JLabel kraticaLabel = new JLabel("Kratica");
-                kraticaLabel.setBounds(10,20,80,25);
-                panel_razredi.add(kraticaLabel);
+            JLabel kraticaLabel = new JLabel("Kratica");
+            kraticaLabel.setBounds(10, 20, 80, 25);
+            panel_razredi.add(kraticaLabel);
 
-                razred_kraticaText = new JTextField(20);
-                razred_kraticaText.setBounds(125,20,165,25);
-                panel_razredi.add(razred_kraticaText);
+            razred_kraticaText = new JTextField(20);
+            razred_kraticaText.setBounds(125, 20, 165, 25);
+            panel_razredi.add(razred_kraticaText);
 
-                JLabel programLabel = new JLabel("ComboBox");
-                programLabel.setBounds(10,50,80,25);
-                panel_razredi.add(programLabel); 
+            JLabel programLabel = new JLabel("ComboBox");
+            programLabel.setBounds(10, 50, 80, 25);
+            panel_razredi.add(programLabel);
 
-                program_idText = new JTextField(20);
-                program_idText.setBounds(125,50,165,25);
-                panel_razredi.add(program_idText);
+            program_idText = new JTextField(20);
+            program_idText.setBounds(125, 50, 165, 25);
+            panel_razredi.add(program_idText);
 
-                JLabel dijaki_countabel = new JLabel("Stevilo dijakov");
-                dijaki_countabel.setBounds(10,80,100,25);
-                panel_razredi.add(dijaki_countabel);
+            JLabel dijaki_countabel = new JLabel("Stevilo dijakov");
+            dijaki_countabel.setBounds(10, 80, 100, 25);
+            panel_razredi.add(dijaki_countabel);
 
-                dijaki_countText = new JTextField(20);
-                dijaki_countText.setBounds(125,80,165,25);
-                panel_razredi.add(dijaki_countText);
+            dijaki_countText = new JTextField(20);
+            dijaki_countText.setBounds(125, 80, 165, 25);
+            panel_razredi.add(dijaki_countText);
 
-                update_Button = new JButton("INSERT");
-                update_Button.setBounds(200, 115, 90, 25);
-                update_Button.addActionListener(new login_());
-                update_Button.setForeground(Color.white);
-                panel_razredi.add(update_Button);
+            update_Button = new JButton("INSERT");
+            update_Button.setBounds(200, 115, 90, 25);
+            update_Button.addActionListener(new login_());
+            update_Button.setForeground(Color.white);
+            panel_razredi.add(update_Button);
 
-                panel_razredi.setLayout(null);
-                frame_update.add(panel_razredi);
-        
-        frame_update.setPreferredSize(new Dimension(350, 200)); 
-        frame_update.pack();
-        frame_update.setLocationRelativeTo(null);
-        frame_update.setVisible(true);
-            }
-            else if(view_database == "programi")
-            {
-            
+            panel_razredi.setLayout(null);
+            frame_update.add(panel_razredi);
+
+            frame_update.setPreferredSize(new Dimension(350, 200));
+            frame_update.pack();
+            frame_update.setLocationRelativeTo(null);
+            frame_update.setVisible(true);
+            frame_update.setResizable(false);
+        } else if (view_database == "programi") {
+
             JFrame frame_update = new JFrame("programi edit");
             frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JPanel panel_programi = new JPanel();  
-            panel_programi.setBackground(new ColorUIResource(170,170,170));
-            
-    
-                    JLabel programLabel = new JLabel("Ime");
-                    programLabel.setBounds(10,20,80,25);
-                    panel_programi.add(programLabel);
-    
-                    program_imeText = new JTextField(20);
-                    program_imeText.setBounds(125,20,165,25);
-                    panel_programi.add(program_imeText);
-    
-                    JLabel opisabel = new JLabel("Opis");
-                    opisabel.setBounds(10,50,80,25);
-                    panel_programi.add(opisabel); 
-    
-                    opisText = new JTextField(20);
-                    opisText.setBounds(125,50,165,25);
-                    panel_programi.add(opisText);
-    
-                    JLabel kraticaLabel = new JLabel("Kratica");
-                    kraticaLabel.setBounds(10,80,100,25);
-                    panel_programi.add(kraticaLabel);
-    
-                    program_kraticaText = new JTextField(20);
-                    program_kraticaText.setBounds(125,80,165,25);
-                    panel_programi.add(program_kraticaText);
-    
-                    update_Button = new JButton("INSERT");
-                    update_Button.setBounds(200, 115, 90, 25);
-                    update_Button.addActionListener(new login_());
-                    update_Button.setForeground(Color.white);
-                    panel_programi.add(update_Button);
-    
-                    panel_programi.setLayout(null);
-                    frame_update.add(panel_programi);
-            
-            frame_update.setPreferredSize(new Dimension(350, 200)); 
+            JPanel panel_programi = new JPanel();
+            panel_programi.setBackground(new ColorUIResource(170, 170, 170));
+
+            JLabel programLabel = new JLabel("Ime");
+            programLabel.setBounds(10, 20, 80, 25);
+            panel_programi.add(programLabel);
+
+            program_imeText = new JTextField(20);
+            program_imeText.setBounds(125, 20, 165, 25);
+            panel_programi.add(program_imeText);
+
+            JLabel opisabel = new JLabel("Opis");
+            opisabel.setBounds(10, 50, 80, 25);
+            panel_programi.add(opisabel);
+
+            opisText = new JTextField(20);
+            opisText.setBounds(125, 50, 165, 25);
+            panel_programi.add(opisText);
+
+            JLabel kraticaLabel = new JLabel("Kratica");
+            kraticaLabel.setBounds(10, 80, 100, 25);
+            panel_programi.add(kraticaLabel);
+
+            program_kraticaText = new JTextField(20);
+            program_kraticaText.setBounds(125, 80, 165, 25);
+            panel_programi.add(program_kraticaText);
+
+            update_Button = new JButton("INSERT");
+            update_Button.setBounds(200, 115, 90, 25);
+            update_Button.addActionListener(new login_());
+            update_Button.setForeground(Color.white);
+            panel_programi.add(update_Button);
+
+            panel_programi.setLayout(null);
+            frame_update.add(panel_programi);
+
+            frame_update.setPreferredSize(new Dimension(350, 200));
             frame_update.pack();
             frame_update.setLocationRelativeTo(null);
             frame_update.setVisible(true);
-        }
-        else if(view_database == "kraji")
-            {
-            
+            frame_update.setResizable(false);
+        } else if (view_database == "kraji") {
+
             JFrame frame_update = new JFrame("kraji edit");
             frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JPanel panel_kraji = new JPanel();  
-            panel_kraji.setBackground(new ColorUIResource(170,170,170));
-            
-    
-                    JLabel imeLabel = new JLabel("Ime");
-                    imeLabel.setBounds(10,20,80,25);
-                    panel_kraji.add(imeLabel);
-    
-                    kraj_imeText = new JTextField(20);
-                    kraj_imeText.setBounds(125,20,165,25);
-                    panel_kraji.add(kraj_imeText);
-    
-                    JLabel postaLabel = new JLabel("Posta");
-                    postaLabel.setBounds(10,50,80,25);
-                    panel_kraji.add(postaLabel); 
-    
-                    postaText = new JTextField(20);
-                    postaText.setBounds(125,50,165,25);
-                    panel_kraji.add(postaText);
-    
-                    JLabel podkrajLabel = new JLabel("Podkraji");
-                    podkrajLabel.setBounds(10,80,100,25);
-                    panel_kraji.add(podkrajLabel);
-    
-                    podkrajText = new JTextField(20);
-                    podkrajText.setBounds(125,80,165,25);
-                    panel_kraji.add(podkrajText);
-    
-                    update_Button = new JButton("INSERT");
-                    update_Button.setBounds(200, 115, 90, 25);
-                    update_Button.addActionListener(new login_());
-                    update_Button.setForeground(Color.white);
-                    panel_kraji.add(update_Button);
-    
-                    panel_kraji.setLayout(null);
-                    frame_update.add(panel_kraji);
-            
-            frame_update.setPreferredSize(new Dimension(350, 200)); 
+            JPanel panel_kraji = new JPanel();
+            panel_kraji.setBackground(new ColorUIResource(170, 170, 170));
+
+            JLabel imeLabel = new JLabel("Ime");
+            imeLabel.setBounds(10, 20, 80, 25);
+            panel_kraji.add(imeLabel);
+
+            kraj_imeText = new JTextField(20);
+            kraj_imeText.setBounds(125, 20, 165, 25);
+            panel_kraji.add(kraj_imeText);
+
+            JLabel postaLabel = new JLabel("Posta");
+            postaLabel.setBounds(10, 50, 80, 25);
+            panel_kraji.add(postaLabel);
+
+            postaText = new JTextField(20);
+            postaText.setBounds(125, 50, 165, 25);
+            panel_kraji.add(postaText);
+
+            JLabel podkrajLabel = new JLabel("Podkraji");
+            podkrajLabel.setBounds(10, 80, 100, 25);
+            panel_kraji.add(podkrajLabel);
+
+            podkrajText = new JTextField(20);
+            podkrajText.setBounds(125, 80, 165, 25);
+            panel_kraji.add(podkrajText);
+
+            update_Button = new JButton("INSERT");
+            update_Button.setBounds(200, 115, 90, 25);
+            update_Button.addActionListener(new login_());
+            update_Button.setForeground(Color.white);
+            panel_kraji.add(update_Button);
+
+            panel_kraji.setLayout(null);
+            frame_update.add(panel_kraji);
+
+            frame_update.setPreferredSize(new Dimension(350, 200));
             frame_update.pack();
             frame_update.setLocationRelativeTo(null);
             frame_update.setVisible(true);
-        }
-        else if(view_database == "dijaki")
-            {
-            
+            frame_update.setResizable(false);
+        } else if (view_database == "dijaki") {
+
             JFrame frame_update = new JFrame("dijaki edit");
             frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JPanel panel_dijaki = new JPanel();  
-            panel_dijaki.setBackground(new ColorUIResource(170,170,170));
-            
-    
-                    JLabel imeLabel = new JLabel("Ime");
-                    imeLabel.setBounds(10,20,80,25);
-                    panel_dijaki.add(imeLabel);
-    
-                    dijak_imeText = new JTextField(20);
-                    dijak_imeText.setBounds(125,20,165,25);
-                    panel_dijaki.add(dijak_imeText);
-    
-                    JLabel priimekLabel = new JLabel("Priimek");
-                    priimekLabel.setBounds(10,50,80,25);
-                    panel_dijaki.add(priimekLabel); 
-    
-                    priimekText = new JTextField(20);
-                    priimekText.setBounds(125,50,165,25);
-                    panel_dijaki.add(priimekText);
-    
-                    JLabel datum_rojstvaLabel = new JLabel("Datum picker");
-                    datum_rojstvaLabel.setBounds(10,80,100,25);
-                    panel_dijaki.add(datum_rojstvaLabel);
-    
-                    datum_rojstvaText = new JTextField(20);
-                    datum_rojstvaText.setBounds(125,80,165,25);
-                    panel_dijaki.add(datum_rojstvaText);
+            JPanel panel_dijaki = new JPanel();
+            panel_dijaki.setBackground(new ColorUIResource(170, 170, 170));
 
-                    JLabel spolLabel = new JLabel("Combobox");
-                    spolLabel.setBounds(10,110,80,25);
-                    panel_dijaki.add(spolLabel);
-    
-                    spolText = new JTextField(20);
-                    spolText.setBounds(125,110,165,25);
-                    panel_dijaki.add(spolText);
-    
-                    JLabel kraj_idLabel = new JLabel("Combobox");
-                    kraj_idLabel.setBounds(10,140,80,25);
-                    panel_dijaki.add(kraj_idLabel); 
-    
-                    kraj_idText = new JTextField(20);
-                    kraj_idText.setBounds(125,140,165,25);
-                    panel_dijaki.add(kraj_idText);
-    
-                    JLabel razred_idLabel = new JLabel("Datum picker");
-                    razred_idLabel.setBounds(10,170,100,25);
-                    panel_dijaki.add(razred_idLabel);
-    
-                    razred_idText = new JTextField(20);
-                    razred_idText.setBounds(125,170,165,25);
-                    panel_dijaki.add(razred_idText);    
+            JLabel imeLabel = new JLabel("Ime");
+            imeLabel.setBounds(10, 20, 80, 25);
+            panel_dijaki.add(imeLabel);
 
-                                       
-                    
-                    update_Button = new JButton("INSERT");
-                    update_Button.setBounds(200, 205, 90, 25);
-                    update_Button.addActionListener(new login_());
-                    update_Button.setForeground(Color.white);
-                    panel_dijaki.add(update_Button);
-    
-                    panel_dijaki.setLayout(null);
-                    frame_update.add(panel_dijaki);
-            
-            frame_update.setPreferredSize(new Dimension(350, 280)); 
+            dijak_imeText = new JTextField(20);
+            dijak_imeText.setBounds(125, 20, 165, 25);
+            panel_dijaki.add(dijak_imeText);
+
+            JLabel priimekLabel = new JLabel("Priimek");
+            priimekLabel.setBounds(10, 50, 80, 25);
+            panel_dijaki.add(priimekLabel);
+
+            priimekText = new JTextField(20);
+            priimekText.setBounds(125, 50, 165, 25);
+            panel_dijaki.add(priimekText);
+
+            JLabel datum_rojstvaLabel = new JLabel("Datum picker");
+            datum_rojstvaLabel.setBounds(10, 80, 100, 25);
+            panel_dijaki.add(datum_rojstvaLabel);
+
+            datum_rojstvaText = new JTextField(20);
+            datum_rojstvaText.setBounds(125, 80, 165, 25);
+            panel_dijaki.add(datum_rojstvaText);
+
+            JLabel spolLabel = new JLabel("Combobox");
+            spolLabel.setBounds(10, 110, 80, 25);
+            panel_dijaki.add(spolLabel);
+
+            spolText = new JTextField(20);
+            spolText.setBounds(125, 110, 165, 25);
+            panel_dijaki.add(spolText);
+
+            JLabel kraj_idLabel = new JLabel("Combobox");
+            kraj_idLabel.setBounds(10, 140, 80, 25);
+            panel_dijaki.add(kraj_idLabel);
+
+            kraj_idText = new JTextField(20);
+            kraj_idText.setBounds(125, 140, 165, 25);
+            panel_dijaki.add(kraj_idText);
+
+            JLabel razred_idLabel = new JLabel("Datum picker");
+            razred_idLabel.setBounds(10, 170, 100, 25);
+            panel_dijaki.add(razred_idLabel);
+
+            razred_idText = new JTextField(20);
+            razred_idText.setBounds(125, 170, 165, 25);
+            panel_dijaki.add(razred_idText);
+
+            update_Button = new JButton("INSERT");
+            update_Button.setBounds(200, 205, 90, 25);
+            update_Button.addActionListener(new login_());
+            update_Button.setForeground(Color.white);
+            panel_dijaki.add(update_Button);
+
+            panel_dijaki.setLayout(null);
+            frame_update.add(panel_dijaki);
+
+            frame_update.setPreferredSize(new Dimension(350, 280));
             frame_update.pack();
             frame_update.setLocationRelativeTo(null);
             frame_update.setVisible(true);
+            frame_update.setResizable(false);
         }
     }
-    public void insert()
-    {
-        if(view_database == "razredi")
-            {
-        JFrame frame_insert = new JFrame("razredi insert");
-        frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel_razredi = new JPanel();  
-        panel_razredi.setBackground(new ColorUIResource(170,170,170));
-        
 
-                JLabel kraticaLabel = new JLabel("Kratica");
-                kraticaLabel.setBounds(10,20,80,25);
-                panel_razredi.add(kraticaLabel);
+    public void insert() {
+        if (view_database == "razredi") {
+            JFrame frame_insert = new JFrame("razredi insert");
+            frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JPanel panel_razredi = new JPanel();
+            panel_razredi.setBackground(new ColorUIResource(170, 170, 170));
 
-                razred_kraticaText = new JTextField(20);
-                razred_kraticaText.setBounds(125,20,165,25);
-                panel_razredi.add(razred_kraticaText);
+            JLabel kraticaLabel = new JLabel("Kratica");
+            kraticaLabel.setBounds(10, 20, 80, 25);
+            panel_razredi.add(kraticaLabel);
 
-                JLabel programLabel = new JLabel("ComboBox");
-                programLabel.setBounds(10,50,80,25);
-                panel_razredi.add(programLabel); 
+            razred_kraticaText = new JTextField(20);
+            razred_kraticaText.setBounds(125, 20, 165, 25);
+            panel_razredi.add(razred_kraticaText);
 
-                program_idText = new JTextField(20);
-                program_idText.setBounds(125,50,165,25);
-                panel_razredi.add(program_idText);
+            JLabel programLabel = new JLabel("ComboBox");
+            programLabel.setBounds(10, 50, 80, 25);
+            panel_razredi.add(programLabel);
 
-                JLabel dijaki_countabel = new JLabel("Stevilo dijakov");
-                dijaki_countabel.setBounds(10,80,100,25);
-                panel_razredi.add(dijaki_countabel);
+            program_idText = new JTextField(20);
+            program_idText.setBounds(125, 50, 165, 25);
+            panel_razredi.add(program_idText);
 
-                dijaki_countText = new JTextField(20);
-                dijaki_countText.setBounds(125,80,165,25);
-                panel_razredi.add(dijaki_countText);
+            JLabel dijaki_countabel = new JLabel("Stevilo dijakov");
+            dijaki_countabel.setBounds(10, 80, 100, 25);
+            panel_razredi.add(dijaki_countabel);
 
-                update_Button = new JButton("INSERT");
-                update_Button.setBounds(200, 115, 90, 25);
-                update_Button.addActionListener(new login_());
-                update_Button.setForeground(Color.white);
-                panel_razredi.add(update_Button);
+            dijaki_countText = new JTextField(20);
+            dijaki_countText.setBounds(125, 80, 165, 25);
+            panel_razredi.add(dijaki_countText);
 
-                panel_razredi.setLayout(null);
-                frame_insert.add(panel_razredi);
-        
-                frame_insert.setPreferredSize(new Dimension(350, 200)); 
-                frame_insert.pack();
-                frame_insert.setLocationRelativeTo(null);
-                frame_insert.setVisible(true);
-            }
-            else if(view_database == "programi")
-            {
-            
+            update_Button = new JButton("INSERT");
+            update_Button.setBounds(200, 115, 90, 25);
+            update_Button.addActionListener(new login_());
+            update_Button.setForeground(Color.white);
+            panel_razredi.add(update_Button);
+
+            panel_razredi.setLayout(null);
+            frame_insert.add(panel_razredi);
+
+            frame_insert.setPreferredSize(new Dimension(350, 200));
+            frame_insert.pack();
+            frame_insert.setLocationRelativeTo(null);
+            frame_insert.setVisible(true);
+            frame_insert.setResizable(false);
+        } else if (view_database == "programi") {
+
             JFrame frame_insert = new JFrame("programi insert");
             frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JPanel panel_programi = new JPanel();  
-            panel_programi.setBackground(new ColorUIResource(170,170,170));
-            
-    
-                    JLabel programLabel = new JLabel("Ime");
-                    programLabel.setBounds(10,20,80,25);
-                    panel_programi.add(programLabel);
-    
-                    program_imeText = new JTextField(20);
-                    program_imeText.setBounds(125,20,165,25);
-                    panel_programi.add(program_imeText);
-    
-                    JLabel opisabel = new JLabel("Opis");
-                    opisabel.setBounds(10,50,80,25);
-                    panel_programi.add(opisabel); 
-    
-                    opisText = new JTextField(20);
-                    opisText.setBounds(125,50,165,25);
-                    panel_programi.add(opisText);
-    
-                    JLabel kraticaLabel = new JLabel("Kratica");
-                    kraticaLabel.setBounds(10,80,100,25);
-                    panel_programi.add(kraticaLabel);
-    
-                    program_kraticaText = new JTextField(20);
-                    program_kraticaText.setBounds(125,80,165,25);
-                    panel_programi.add(program_kraticaText);
-    
-                    update_Button = new JButton("INSERT");
-                    update_Button.setBounds(200, 115, 90, 25);
-                    update_Button.addActionListener(new login_());
-                    update_Button.setForeground(Color.white);
-                    panel_programi.add(update_Button);
-    
-                    panel_programi.setLayout(null);
-                    frame_insert.add(panel_programi);
-            
-                    frame_insert.setPreferredSize(new Dimension(350, 200)); 
-                    frame_insert.pack();
-                    frame_insert.setLocationRelativeTo(null);
-                    frame_insert.setVisible(true);
-        }
-        else if(view_database == "kraji")
-            {
-            
+            JPanel panel_programi = new JPanel();
+            panel_programi.setBackground(new ColorUIResource(170, 170, 170));
+
+            JLabel programLabel = new JLabel("Ime");
+            programLabel.setBounds(10, 20, 80, 25);
+            panel_programi.add(programLabel);
+
+            program_imeText = new JTextField(20);
+            program_imeText.setBounds(125, 20, 165, 25);
+            panel_programi.add(program_imeText);
+
+            JLabel opisabel = new JLabel("Opis");
+            opisabel.setBounds(10, 50, 80, 25);
+            panel_programi.add(opisabel);
+
+            opisText = new JTextField(20);
+            opisText.setBounds(125, 50, 165, 25);
+            panel_programi.add(opisText);
+
+            JLabel kraticaLabel = new JLabel("Kratica");
+            kraticaLabel.setBounds(10, 80, 100, 25);
+            panel_programi.add(kraticaLabel);
+
+            program_kraticaText = new JTextField(20);
+            program_kraticaText.setBounds(125, 80, 165, 25);
+            panel_programi.add(program_kraticaText);
+
+            update_Button = new JButton("INSERT");
+            update_Button.setBounds(200, 115, 90, 25);
+            update_Button.addActionListener(new login_());
+            update_Button.setForeground(Color.white);
+            panel_programi.add(update_Button);
+
+            panel_programi.setLayout(null);
+            frame_insert.add(panel_programi);
+
+            frame_insert.setPreferredSize(new Dimension(350, 200));
+            frame_insert.pack();
+            frame_insert.setLocationRelativeTo(null);
+            frame_insert.setVisible(true);
+            frame_insert.setResizable(false);
+        } else if (view_database == "kraji") {
+
             JFrame frame_insert = new JFrame("kraji insert");
             frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JPanel panel_kraji = new JPanel();  
-            panel_kraji.setBackground(new ColorUIResource(170,170,170));
-            
-    
-                    JLabel imeLabel = new JLabel("Ime");
-                    imeLabel.setBounds(10,20,80,25);
-                    panel_kraji.add(imeLabel);
-    
-                    kraj_imeText = new JTextField(20);
-                    kraj_imeText.setBounds(125,20,165,25);
-                    panel_kraji.add(kraj_imeText);
-    
-                    JLabel postaLabel = new JLabel("Posta");
-                    postaLabel.setBounds(10,50,80,25);
-                    panel_kraji.add(postaLabel); 
-    
-                    postaText = new JTextField(20);
-                    postaText.setBounds(125,50,165,25);
-                    panel_kraji.add(postaText);
-    
-                    JLabel podkrajLabel = new JLabel("Podkraji");
-                    podkrajLabel.setBounds(10,80,100,25);
-                    panel_kraji.add(podkrajLabel);
-    
-                    podkrajText = new JTextField(20);
-                    podkrajText.setBounds(125,80,165,25);
-                    panel_kraji.add(podkrajText);
-    
-                    update_Button = new JButton("INSERT");
-                    update_Button.setBounds(200, 115, 90, 25);
-                    update_Button.addActionListener(new login_());
-                    update_Button.setForeground(Color.white);
-                    panel_kraji.add(update_Button);
-    
-                    panel_kraji.setLayout(null);
-                    frame_insert.add(panel_kraji);
-            
-                    frame_insert.setPreferredSize(new Dimension(350, 200)); 
-                    frame_insert.pack();
-                    frame_insert.setLocationRelativeTo(null);
-                    frame_insert.setVisible(true);
-        }
-        else if(view_database == "dijaki")
-            {
-            
+            JPanel panel_kraji = new JPanel();
+            panel_kraji.setBackground(new ColorUIResource(170, 170, 170));
+
+            JLabel imeLabel = new JLabel("Ime");
+            imeLabel.setBounds(10, 20, 80, 25);
+            panel_kraji.add(imeLabel);
+
+            kraj_imeText = new JTextField(20);
+            kraj_imeText.setBounds(125, 20, 165, 25);
+            panel_kraji.add(kraj_imeText);
+
+            JLabel postaLabel = new JLabel("Posta");
+            postaLabel.setBounds(10, 50, 80, 25);
+            panel_kraji.add(postaLabel);
+
+            postaText = new JTextField(20);
+            postaText.setBounds(125, 50, 165, 25);
+            panel_kraji.add(postaText);
+
+            JLabel podkrajLabel = new JLabel("Podkraji");
+            podkrajLabel.setBounds(10, 80, 100, 25);
+            panel_kraji.add(podkrajLabel);
+
+            podkrajText = new JTextField(20);
+            podkrajText.setBounds(125, 80, 165, 25);
+            panel_kraji.add(podkrajText);
+
+            update_Button = new JButton("INSERT");
+            update_Button.setBounds(200, 115, 90, 25);
+            update_Button.addActionListener(new login_());
+            update_Button.setForeground(Color.white);
+            panel_kraji.add(update_Button);
+
+            panel_kraji.setLayout(null);
+            frame_insert.add(panel_kraji);
+
+            frame_insert.setPreferredSize(new Dimension(350, 200));
+            frame_insert.pack();
+            frame_insert.setLocationRelativeTo(null);
+            frame_insert.setVisible(true);
+            frame_insert.setResizable(false);
+        } else if (view_database == "dijaki") {
+
             JFrame frame_insert = new JFrame("dijaki insert");
             frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JPanel panel_dijaki = new JPanel();  
-            panel_dijaki.setBackground(new ColorUIResource(170,170,170));
-            
-    
-                    JLabel imeLabel = new JLabel("Ime");
-                    imeLabel.setBounds(10,20,80,25);
-                    panel_dijaki.add(imeLabel);
-    
-                    dijak_imeText = new JTextField(20);
-                    dijak_imeText.setBounds(125,20,165,25);
-                    panel_dijaki.add(dijak_imeText);
-    
-                    JLabel priimekLabel = new JLabel("Priimek");
-                    priimekLabel.setBounds(10,50,80,25);
-                    panel_dijaki.add(priimekLabel); 
-    
-                    priimekText = new JTextField(20);
-                    priimekText.setBounds(125,50,165,25);
-                    panel_dijaki.add(priimekText);
-    
-                    JLabel datum_rojstvaLabel = new JLabel("Datum picker");
-                    datum_rojstvaLabel.setBounds(10,80,100,25);
-                    panel_dijaki.add(datum_rojstvaLabel);
-    
-                    datum_rojstvaText = new JTextField(20);
-                    datum_rojstvaText.setBounds(125,80,165,25);
-                    panel_dijaki.add(datum_rojstvaText);
+            JPanel panel_dijaki = new JPanel();
+            panel_dijaki.setBackground(new ColorUIResource(170, 170, 170));
 
-                    JLabel spolLabel = new JLabel("Combobox");
-                    spolLabel.setBounds(10,110,80,25);
-                    panel_dijaki.add(spolLabel);
-    
-                    spolText = new JTextField(20);
-                    spolText.setBounds(125,110,165,25);
-                    panel_dijaki.add(spolText);
-    
-                    JLabel kraj_idLabel = new JLabel("Combobox");
-                    kraj_idLabel.setBounds(10,140,80,25);
-                    panel_dijaki.add(kraj_idLabel); 
-    
-                    kraj_idText = new JTextField(20);
-                    kraj_idText.setBounds(125,140,165,25);
-                    panel_dijaki.add(kraj_idText);
-    
-                    JLabel razred_idLabel = new JLabel("Datum picker");
-                    razred_idLabel.setBounds(10,170,100,25);
-                    panel_dijaki.add(razred_idLabel);
-    
-                    razred_idText = new JTextField(20);
-                    razred_idText.setBounds(125,170,165,25);
-                    panel_dijaki.add(razred_idText);    
+            JLabel imeLabel = new JLabel("Ime");
+            imeLabel.setBounds(10, 20, 80, 25);
+            panel_dijaki.add(imeLabel);
 
-                                       
-                    
-                    update_Button = new JButton("INSERT");
-                    update_Button.setBounds(200, 205, 90, 25);
-                    update_Button.addActionListener(new login_());
-                    update_Button.setForeground(Color.white);
-                    panel_dijaki.add(update_Button);
-    
-                    panel_dijaki.setLayout(null);
-                    frame_insert.add(panel_dijaki);
-            
-                    frame_insert.setPreferredSize(new Dimension(350, 280)); 
-                    frame_insert.pack();
-                    frame_insert.setLocationRelativeTo(null);
-                    frame_insert.setVisible(true);
-            }
+            dijak_imeText = new JTextField(20);
+            dijak_imeText.setBounds(125, 20, 165, 25);
+            panel_dijaki.add(dijak_imeText);
+
+            JLabel priimekLabel = new JLabel("Priimek");
+            priimekLabel.setBounds(10, 50, 80, 25);
+            panel_dijaki.add(priimekLabel);
+
+            priimekText = new JTextField(20);
+            priimekText.setBounds(125, 50, 165, 25);
+            panel_dijaki.add(priimekText);
+
+            JLabel datum_rojstvaLabel = new JLabel("Datum picker");
+            datum_rojstvaLabel.setBounds(10, 80, 100, 25);
+            panel_dijaki.add(datum_rojstvaLabel);
+
+            datum_rojstvaText = new JTextField(20);
+            datum_rojstvaText.setBounds(125, 80, 165, 25);
+            panel_dijaki.add(datum_rojstvaText);
+
+            JLabel spolLabel = new JLabel("Combobox");
+            spolLabel.setBounds(10, 110, 80, 25);
+            panel_dijaki.add(spolLabel);
+
+            spolText = new JTextField(20);
+            spolText.setBounds(125, 110, 165, 25);
+            panel_dijaki.add(spolText);
+
+            JLabel kraj_idLabel = new JLabel("Combobox");
+            kraj_idLabel.setBounds(10, 140, 80, 25);
+            panel_dijaki.add(kraj_idLabel);
+
+            kraj_idText = new JTextField(20);
+            kraj_idText.setBounds(125, 140, 165, 25);
+            panel_dijaki.add(kraj_idText);
+
+            JLabel razred_idLabel = new JLabel("Datum picker");
+            razred_idLabel.setBounds(10, 170, 100, 25);
+            panel_dijaki.add(razred_idLabel);
+
+            razred_idText = new JTextField(20);
+            razred_idText.setBounds(125, 170, 165, 25);
+            panel_dijaki.add(razred_idText);
+
+            update_Button = new JButton("INSERT");
+            update_Button.setBounds(200, 205, 90, 25);
+            update_Button.addActionListener(new login_());
+            update_Button.setForeground(Color.white);
+            panel_dijaki.add(update_Button);
+
+            panel_dijaki.setLayout(null);
+            frame_insert.add(panel_dijaki);
+
+            frame_insert.setPreferredSize(new Dimension(350, 280));
+            frame_insert.pack();
+            frame_insert.setLocationRelativeTo(null);
+            frame_insert.setVisible(true);
+            frame_insert.setResizable(false);
+        }
     }
+}
+
+class FrameListner implements ComponentListener {
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        e.getComponent().setSize(500, 600);
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
 }
