@@ -4,39 +4,21 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.SimpleDateFormat;
-
-//ui-login
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-
 import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.*;
-import javax.swing.*;
+import javax.swing.*;    
 
 import javax.swing.table.DefaultTableCellRenderer;
 //table
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 public class App {
 
@@ -96,6 +78,7 @@ class login_ implements ActionListener {
     public static JButton deleteButton;
     public static JButton DeleteButton;
     public static JButton insertButton;
+    public static JButton InsertButton;
     private static JLabel success;
 
     public static JTextField deleteText;
@@ -103,29 +86,31 @@ class login_ implements ActionListener {
     public static JTextField updateText;
 
     // razredi update
-    public JTextField razred_kraticaText;
-    public JTextField program_idText;
-    public JTextField dijaki_countText;
+    public static JTextField razred_kraticaText;
+    public static JTextField program_idText;
+    public static JTextField dijaki_countText;
 
     // program update
-    public JTextField program_imeText;
-    public JTextField opisText;
-    public JTextField program_kraticaText;
+    public static JTextField program_imeText;
+    public static JTextField opisText;
+    public static JTextField program_kraticaText;
 
     // kraji update
-    public JTextField kraj_imeText;
-    public JTextField postaText;
-    public JTextField podkrajText;
+    public static JTextField kraj_imeText;
+    public static JTextField postaText;
+    public static JTextField podkrajText;
 
     // dijaki update
-    public JTextField dijak_imeText;
-    public JTextField priimekText;
-    public JTextField datum_rojstvaText;
-    public JTextField spolText;
-    public JTextField kraj_idText;
-    public JTextField razred_idText;
+    public static JTextField dijak_imeText;
+    public static JTextField priimekText;
+    public static JTextField datum_rojstvaText;
+    public static JTextField spolText;
+    public static JTextField kraj_idText;
+    public static JTextField razred_idText;
 
-    public JButton update_Button;
+    public static JButton update_Button;
+
+    static JComboBox programiComboBox;
 
     static String view_database = "";
 
@@ -251,7 +236,11 @@ class login_ implements ActionListener {
             update();
         } else if (e.getSource() == insertButton) {
             insert();
-        } else {
+        }else if(e.getSource() == InsertButton)
+        {
+            dodaj();
+        }
+         else {
             System.out.println("button not in e.getsource");
         }
     }
@@ -724,7 +713,7 @@ class login_ implements ActionListener {
                     String parts[];
                     parts = x.split(",");
                     data[i][0] = parts[0];
-                    data[i][1] = parts[1];
+                    data[i][1] = parts[1].replace("\"","");
                     data[i][2] = parts[2];
                     data[i][3] = parts[3];
                     i++;
@@ -775,6 +764,16 @@ class login_ implements ActionListener {
                 editButton.setForeground(Color.white);
                 panel.add(editButton);
                 f.setResizable(false);
+
+                JLabel insertLabel = new JLabel("Insert new razred");
+                insertLabel.setBounds(10, 350, 100, 25);
+                panel.add(insertLabel);
+
+                insertButton = new JButton("INSERT");
+                insertButton.setBounds(100, 400, 100, 25);
+                insertButton.addActionListener(new login_());
+                insertButton.setForeground(Color.white);
+                panel.add(insertButton);
             }
             if (view_database == "dijaki") {
                 String query = "SELECT view_dijaki()";
@@ -860,8 +859,18 @@ class login_ implements ActionListener {
                 panel.add(editButton);
                 f.setResizable(false);
 
+                JLabel insertLabel = new JLabel("Insert new razred");
+                insertLabel.setBounds(10, 350, 100, 25);
+                panel.add(insertLabel);
+
+                insertButton = new JButton("INSERT");   
+                insertButton.setBounds(100, 400, 100, 25);
+                insertButton.addActionListener(new login_());
+                insertButton.setForeground(Color.white);
+                panel.add(insertButton);
+
             }
-            if (view_database == "kraji") {
+            if (view_database == "kraji") {  ///zamenjaj select z podgprogramom/////////////////////////////////////////////////////////////////////
                 String query = "SELECT * FROM kraji ORDER BY id";
 
                 Statement stm = con.createStatement();
@@ -931,6 +940,16 @@ class login_ implements ActionListener {
                 editButton.setForeground(Color.white);
                 panel.add(editButton);
                 f.setResizable(false);
+
+                JLabel insertLabel = new JLabel("Insert new razred");
+                insertLabel.setBounds(10, 350, 100, 25);
+                panel.add(insertLabel);
+
+                insertButton = new JButton("INSERT");
+                insertButton.setBounds(100, 400, 100, 25);
+                insertButton.addActionListener(new login_());
+                insertButton.setForeground(Color.white);
+                panel.add(insertButton);
             }
             if (view_database == "logs") {
                 String query = "SELECT view_dijaki()";
@@ -1002,7 +1021,7 @@ class login_ implements ActionListener {
                 deleteButton.setForeground(Color.white);
                 panel.add(deleteButton);
                 f.setResizable(false);
-
+                
             }
             con.close();
         }
@@ -1102,6 +1121,7 @@ class login_ implements ActionListener {
             frame_update.setLocationRelativeTo(null);
             frame_update.setVisible(true);
             frame_update.setResizable(false);
+            
         } else if (view_database == "programi") {
 
             JFrame frame_update = new JFrame("programi edit");
@@ -1147,6 +1167,7 @@ class login_ implements ActionListener {
             frame_update.setLocationRelativeTo(null);
             frame_update.setVisible(true);
             frame_update.setResizable(false);
+
         } else if (view_database == "kraji") {
 
             JFrame frame_update = new JFrame("kraji edit");
@@ -1192,6 +1213,7 @@ class login_ implements ActionListener {
             frame_update.setLocationRelativeTo(null);
             frame_update.setVisible(true);
             frame_update.setResizable(false);
+            
         } else if (view_database == "dijaki") {
 
             JFrame frame_update = new JFrame("dijaki edit");
@@ -1263,9 +1285,16 @@ class login_ implements ActionListener {
             frame_update.setResizable(false);
         }
     }
+    
+    public static void insert() {
+        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String username = "ioztqmdz";
+        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
+        try{
+            Connection con = DriverManager.getConnection(url, username, password);
+            java.sql.Statement stm = con.createStatement();
 
-    public void insert() {
-        if (view_database == "razredi") {
+            if (view_database == "razredi") {
             JFrame frame_insert = new JFrame("razredi insert");
             frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_razredi = new JPanel();
@@ -1279,27 +1308,48 @@ class login_ implements ActionListener {
             razred_kraticaText.setBounds(125, 20, 165, 25);
             panel_razredi.add(razred_kraticaText);
 
+            CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_programi()}");
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.execute();
+            int collumn_count = cstmt.getInt(1);
+            cstmt.close();
+
+            String query = "SELECT combo_box_program_razredi()";
+            ResultSet res = stm.executeQuery(query);
+            String replace;
+            String programi[] = new String[collumn_count];
+            System.out.println(collumn_count);
+            int programi_id[] = new int[collumn_count];;
+            int i = 0;
+            while (res.next()) {
+                String x = res.getString(1);
+                x = x.replace("(", "");
+                x = x.replace(")", "");     
+                String parts[];
+                parts = x.split(",");
+                replace = parts[0].replace("\"","");
+                programi[i] = replace; ///////////////////////////////////////////////////////////////////out of bounds
+                programi_id[i] = Integer.parseInt(parts[1]);
+                i++;
+            }
+
             JLabel programLabel = new JLabel("ComboBox");
             programLabel.setBounds(10, 50, 80, 25);
             panel_razredi.add(programLabel);
 
-            program_idText = new JTextField(20);
+            programiComboBox = new JComboBox(programi);
+            programiComboBox.setBounds(125, 50, 165, 25);
+            panel_razredi.add(programiComboBox);
+
+            /*program_idText = new JTextField(20);
             program_idText.setBounds(125, 50, 165, 25);
-            panel_razredi.add(program_idText);
+            panel_razredi.add(program_idText);*/
 
-            JLabel dijaki_countabel = new JLabel("Stevilo dijakov");
-            dijaki_countabel.setBounds(10, 80, 100, 25);
-            panel_razredi.add(dijaki_countabel);
-
-            dijaki_countText = new JTextField(20);
-            dijaki_countText.setBounds(125, 80, 165, 25);
-            panel_razredi.add(dijaki_countText);
-
-            update_Button = new JButton("INSERT");
-            update_Button.setBounds(200, 115, 90, 25);
-            update_Button.addActionListener(new login_());
-            update_Button.setForeground(Color.white);
-            panel_razredi.add(update_Button);
+            InsertButton = new JButton("INSERT");
+            InsertButton.setBounds(200, 115, 90, 25);
+            InsertButton.addActionListener(new login_());
+            InsertButton.setForeground(Color.white);
+            panel_razredi.add(InsertButton);
 
             panel_razredi.setLayout(null);
             frame_insert.add(panel_razredi);
@@ -1309,7 +1359,9 @@ class login_ implements ActionListener {
             frame_insert.setLocationRelativeTo(null);
             frame_insert.setVisible(true);
             frame_insert.setResizable(false);
-        } else if (view_database == "programi") {
+        }
+        
+        else if (view_database == "programi") {
 
             JFrame frame_insert = new JFrame("programi insert");
             frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1385,11 +1437,11 @@ class login_ implements ActionListener {
             podkrajText.setBounds(125, 80, 165, 25);
             panel_kraji.add(podkrajText);
 
-            update_Button = new JButton("INSERT");
-            update_Button.setBounds(200, 115, 90, 25);
-            update_Button.addActionListener(new login_());
-            update_Button.setForeground(Color.white);
-            panel_kraji.add(update_Button);
+            InsertButton = new JButton("INSERT");
+            InsertButton.setBounds(200, 115, 90, 25);
+            InsertButton.addActionListener(new login_());
+            InsertButton.setForeground(Color.white);
+            panel_kraji.add(InsertButton);
 
             panel_kraji.setLayout(null);
             frame_insert.add(panel_kraji);
@@ -1454,12 +1506,11 @@ class login_ implements ActionListener {
             razred_idText.setBounds(125, 170, 165, 25);
             panel_dijaki.add(razred_idText);
 
-            update_Button = new JButton("INSERT");
-            update_Button.setBounds(200, 205, 90, 25);
-            update_Button.addActionListener(new login_());
-            update_Button.setForeground(Color.white);
-            panel_dijaki.add(update_Button);
-
+            InsertButton = new JButton("INSERT");
+            InsertButton.setBounds(200, 115, 90, 25);
+            InsertButton.addActionListener(new login_());
+            InsertButton.setForeground(Color.white);
+            panel_dijaki.add(InsertButton);
             panel_dijaki.setLayout(null);
             frame_insert.add(panel_dijaki);
 
@@ -1469,7 +1520,52 @@ class login_ implements ActionListener {
             frame_insert.setVisible(true);
             frame_insert.setResizable(false);
         }
+        con.close();
     }
+        catch (java.sql.SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+    
+}
+
+public static void dodaj()
+{
+    String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+    String username = "ioztqmdz";
+    String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
+    String razred;
+    int program_id_;
+    try {
+        Connection con = DriverManager.getConnection(url, username, password);
+        if (view_database == "razredi") {
+                razred = razred_kraticaText.getText();
+                String value= programiComboBox.getSelectedItem().toString();
+            System.out.println(value);
+
+            //id from text
+            CallableStatement cstmt1 = con.prepareCall("{?=CALL id_from_text(?)}");
+            cstmt1.registerOutParameter(1, Types.INTEGER);
+            cstmt1.setString(2,value);
+            cstmt1.execute();
+            program_id_ = cstmt1.getInt(1);
+            cstmt1.close();
+
+            //insert to database
+            CallableStatement cstmt = con.prepareCall("{CALL add_razredi(?,?)}");
+            cstmt.setString(1,razred);
+            cstmt.setInt(2, program_id_);
+            cstmt.execute();
+            cstmt.close();
+        }
+        menu();
+        con.close();
+        
+    }
+        catch (java.sql.SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
 }
 
 class FrameListner implements ComponentListener {
@@ -1481,20 +1577,21 @@ class FrameListner implements ComponentListener {
 
     @Override
     public void componentMoved(ComponentEvent e) {
-        // TODO Auto-generated method stub
+       
 
     }
 
     @Override
     public void componentShown(ComponentEvent e) {
-        // TODO Auto-generated method stub
+        
 
     }
 
     @Override
     public void componentHidden(ComponentEvent e) {
-        // TODO Auto-generated method stub
+        
 
     }
 
+    }
 }
