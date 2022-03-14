@@ -53,6 +53,7 @@ public class App {
         }
 
         login_.LOGIN();
+        
     }
 
 }
@@ -121,7 +122,7 @@ class login_ implements ActionListener {
     public static void LOGIN() {
 
         JFrame frame = new JFrame("LOGIN");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel();
         panel.setBackground(new ColorUIResource(170, 170, 170));
         frame.add(panel);
@@ -131,7 +132,6 @@ class login_ implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setResizable(false);
-
     }
 
     private static void placeComponents(JPanel panel) {
@@ -173,6 +173,7 @@ class login_ implements ActionListener {
         success.setBounds(30, 85, 300, 25);
         success.setForeground(new ColorUIResource(153, 0, 0));
         panel.add(success);
+        
     }
 
     @Override
@@ -871,28 +872,33 @@ class login_ implements ActionListener {
 
             }
             if (view_database == "kraji") {  ///zamenjaj select z podgprogramom/////////////////////////////////////////////////////////////////////
-                String query = "SELECT * FROM kraji ORDER BY id";
+                String query = "SELECT view_kraji()";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
-                ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM kraji");
-                while (rs.next()) {
-                    collumn_count = rs.getInt(1);
-                    System.out.println(collumn_count);
-                }
+
+                CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_kraji()}");
+                cstmt.registerOutParameter(1, Types.INTEGER);
+                cstmt.execute();
+                collumn_count = cstmt.getInt(1);
+                cstmt.close();
                 String columns[] = { "id", "ime", "posta", "podkraji" };
                 String data[][] = new String[collumn_count][4];
 
                 int i = 0;
                 while (res.next()) {
-                    int id = res.getInt("id");
-                    String ime = res.getString("ime");
-                    String posta = res.getString("posta");
-                    String podkraji = res.getString("podkraji");
-                    data[i][0] = id + "";
-                    data[i][1] = ime;
-                    data[i][2] = posta;
-                    data[i][3] = podkraji;
+                    String x = res.getString(1);
+
+                    x = x.replace("(", "");
+                    x = x.replace(")", "");
+                    String parts[];
+                    
+                    parts = x.split(",");
+                    data[i][0] = parts[0];
+                    data[i][1] = parts[1].replace("\"", "");;
+                    data[i][2] = parts[2];
+                    data[i][3] = parts[3].replace("\"", "");
+                    
                     i++;
                 }
                 DefaultTableModel model = new DefaultTableModel(data, columns);
@@ -910,8 +916,11 @@ class login_ implements ActionListener {
                 f.setSize(500, 600);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-                // table.getColumnModel().getColumn(0).setPreferredWidth(5);
-
+                table.getColumnModel().getColumn(0).setPreferredWidth(40);
+                table.getColumnModel().getColumn(1).setPreferredWidth(170);
+                table.getColumnModel().getColumn(2).setPreferredWidth(60);
+                table.getColumnModel().getColumn(3).setPreferredWidth(70);
+               // pane.setPreferredSize(new Dimension(500, 500));
                 JLabel deleteLabel = new JLabel("Insert ID to delete");
                 deleteLabel.setBounds(10, 20, 80, 25);
                 panel.add(deleteLabel);
@@ -952,19 +961,19 @@ class login_ implements ActionListener {
                 panel.add(insertButton);
             }
             if (view_database == "logs") {
-                String query = "SELECT view_dijaki()";
+                String query = "SELECT view_dijaki_logs()";
 
                 Statement stm = con.createStatement();
                 ResultSet res = stm.executeQuery(query);
 
-                CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_dijaki()}");
+                CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_dijaki_logs()}");
                 cstmt.registerOutParameter(1, Types.INTEGER);
                 cstmt.execute();
                 collumn_count = cstmt.getInt(1);
                 cstmt.close();
 
-                String columns[] = { "ID", "ime", "priimek", "datum rojstva", "spol", "kraj ID", "razred ID" };
-                String data[][] = new String[collumn_count][7];
+                String columns[] = { "ID", "ime", "priimek", "datum rojstva", "spol", "kraj ID", "razred ID", "datum spremembe", "dijak ID", "tip spremembe" };
+                String data[][] = new String[collumn_count][10];
 
                 int i = 0;
                 while (res.next()) {
@@ -976,14 +985,16 @@ class login_ implements ActionListener {
                     String parts[];
                     parts = x.split(",");
 
-                    for (int e = 0; e < 7; e++) {
-                        if (e == 3) {
-                            data[i][e] = parts[e].substring(1, parts[e].indexOf(" "));
-
-                        } else {
-                            data[i][e] = parts[e];
-                        }
-                    }
+                    data[i][0] = parts[0];
+                    data[i][1] = parts[1];
+                    data[i][2] = parts[2];
+                    data[i][3] = parts[3].substring(1, parts[3].indexOf(" "));
+                    data[i][4] = parts[4];
+                    data[i][5] = parts[5];
+                    data[i][6] = parts[6];
+                    data[i][7] = parts[7].substring(1, parts[7].indexOf(" "));
+                    data[i][8] = parts[8];
+                    data[i][9] = parts[9];
                     i++;
                 }
                 j++;
@@ -993,19 +1004,16 @@ class login_ implements ActionListener {
                 table.setShowVerticalLines(true);
                 table.setRowHeight(20);
                 table.setRowHeight(20);
-                table.setPreferredSize(new Dimension(450, 500));
+                //table.setPreferredSize(new Dimension(450, 500));
                 table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 JScrollPane pane = new JScrollPane(table);
-                JFrame f = new JFrame("LOGS VIEW");
+                JFrame f = new JFrame("DIJAKI LOGS VIEW");
                 JPanel panel = new JPanel();
                 panel.add(pane);
                 f.add(panel);
                 f.setSize(500, 600);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-                table.getColumnModel().getColumn(0).setPreferredWidth(25);
-                table.getColumnModel().getColumn(4).setPreferredWidth(25);
-                table.getColumnModel().getColumn(6).setPreferredWidth(25);
 
                 JLabel deleteLabel = new JLabel("Insert ID to delete");
                 deleteLabel.setBounds(10, 20, 80, 25);
@@ -1021,7 +1029,16 @@ class login_ implements ActionListener {
                 deleteButton.setForeground(Color.white);
                 panel.add(deleteButton);
                 f.setResizable(false);
-                
+                table.getColumnModel().getColumn(0).setPreferredWidth(40);
+                table.getColumnModel().getColumn(1).setPreferredWidth(100);
+                table.getColumnModel().getColumn(2).setPreferredWidth(100);
+                table.getColumnModel().getColumn(3).setPreferredWidth(80);
+                table.getColumnModel().getColumn(4).setPreferredWidth(20);
+                table.getColumnModel().getColumn(5).setPreferredWidth(40);
+                table.getColumnModel().getColumn(6).setPreferredWidth(40);
+                table.getColumnModel().getColumn(7).setPreferredWidth(80);
+                table.getColumnModel().getColumn(8).setPreferredWidth(40);
+                table.getColumnModel().getColumn(9).setPreferredWidth(100);
             }
             con.close();
         }
