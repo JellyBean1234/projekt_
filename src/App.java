@@ -253,7 +253,7 @@ class login_ implements ActionListener {
 
     public static void menu() {
         JFrame frame_menu = new JFrame("MENU");
-        frame_menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       // frame_menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel_menu = new JPanel();
         panel_menu.setBackground(new ColorUIResource(170, 170, 170));
         frame_menu.add(panel_menu);
@@ -684,7 +684,7 @@ class login_ implements ActionListener {
                 // panel.setLayout(null);
                 razredi_frame.add(panel);
                 razredi_frame.setSize(500, 600);
-                razredi_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                //razredi_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 razredi_frame.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(1);
 
@@ -738,7 +738,7 @@ class login_ implements ActionListener {
                 panel.add(pane);
                 f.add(panel);
                 f.setSize(500, 600);
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+               // f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(5);
 
@@ -831,7 +831,7 @@ class login_ implements ActionListener {
                 panel.add(pane);
                 f.add(panel);
                 f.setSize(500, 600);
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(40);
                 table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -919,7 +919,7 @@ class login_ implements ActionListener {
                 panel.add(pane);
                 f.add(panel);
                 f.setSize(500, 600);
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+               // f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
                 table.getColumnModel().getColumn(0).setPreferredWidth(40);
                 table.getColumnModel().getColumn(1).setPreferredWidth(170);
@@ -1017,7 +1017,7 @@ class login_ implements ActionListener {
                 panel.add(pane);
                 f.add(panel);
                 f.setSize(500, 600);
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
 
                 JLabel deleteLabel = new JLabel("Insert ID to delete");
@@ -1101,7 +1101,7 @@ class login_ implements ActionListener {
     public void update() {
         if (view_database == "razredi") {
             JFrame frame_update = new JFrame("razredi edit");
-            frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+           // frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_razredi = new JPanel();
             panel_razredi.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1147,7 +1147,7 @@ class login_ implements ActionListener {
         } else if (view_database == "programi") {
 
             JFrame frame_update = new JFrame("programi edit");
-            frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+           // frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_programi = new JPanel();
             panel_programi.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1193,7 +1193,7 @@ class login_ implements ActionListener {
         } else if (view_database == "kraji") {
 
             JFrame frame_update = new JFrame("kraji edit");
-            frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+          //  frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_kraji = new JPanel();
             panel_kraji.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1239,7 +1239,7 @@ class login_ implements ActionListener {
         } else if (view_database == "dijaki") {
 
             JFrame frame_update = new JFrame("dijaki edit");
-            frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+          //  frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_dijaki = new JPanel();
             panel_dijaki.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1318,7 +1318,7 @@ class login_ implements ActionListener {
 
             if (view_database == "razredi") {
             JFrame frame_insert = new JFrame("razredi insert");
-            frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+           // frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_razredi = new JPanel();
             panel_razredi.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1386,7 +1386,7 @@ class login_ implements ActionListener {
         else if (view_database == "programi") {
 
             JFrame frame_insert = new JFrame("programi insert");
-            frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            //frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_programi = new JPanel();
             panel_programi.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1431,7 +1431,7 @@ class login_ implements ActionListener {
         } else if (view_database == "kraji") {
 
             JFrame frame_insert = new JFrame("kraji insert");
-            frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       //     frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_kraji = new JPanel();
             panel_kraji.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1476,7 +1476,7 @@ class login_ implements ActionListener {
         } else if (view_database == "dijaki") {
 
             JFrame frame_insert = new JFrame("dijaki insert");
-            frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+          //  frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_dijaki = new JPanel();
             panel_dijaki.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1643,7 +1643,7 @@ public static void dodaj()
             cstmt1.registerOutParameter(1, Types.INTEGER);
             cstmt1.setString(2,value);
             cstmt1.setString(3,view_database);
-            cstmt1.setString(3,"a");
+            cstmt1.setString(4,"a");
             cstmt1.execute();
             program_id_ = cstmt1.getInt(1);
             cstmt1.close();
@@ -1723,7 +1723,7 @@ public static void dodaj()
             CallableStatement cstmt1 = con.prepareCall("{CALL add_dijaki(?,?,?,?,?,?)}");
             cstmt1.setString(1, dijaki_ime);
             cstmt1.setString(2, dijak_priimek);
-            cstmt1.setString(3, datum_rojstva);//////////////////////////////////////////////                        posli timestamp
+            cstmt1.setString(3, datum_rojstva);
             cstmt1.setString(4, spol);
             cstmt1.setInt(5, kraj_id);
             cstmt1.setInt(6, razred_id);
