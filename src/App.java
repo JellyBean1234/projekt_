@@ -111,7 +111,12 @@ class login_ implements ActionListener {
 
     public static JButton update_Button;
 
-    static JComboBox programiComboBox;
+    static JComboBox<String> programiComboBox;
+
+    static JComboBox<String> razredi_kraji_ComboBox;
+    static JComboBox<String> dijaki_spoli_ComboBox;
+    static JComboBox<String> dijaki_razredi_ComboBox;
+
 
     static String view_database = "";
 
@@ -588,7 +593,7 @@ class login_ implements ActionListener {
         try {
             Connection con = DriverManager.getConnection(url, username, password);
 
-            java.sql.Statement st = con.createStatement();
+            con.createStatement();
 
             if (view_database == "razredi") {
                 String query = "SELECT view_razredi()";
@@ -828,7 +833,7 @@ class login_ implements ActionListener {
                 f.setSize(500, 600);
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setVisible(true);
-                table.getColumnModel().getColumn(0).setPreferredWidth(5);
+                table.getColumnModel().getColumn(0).setPreferredWidth(40);
                 table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
                 JLabel deleteLabel = new JLabel("Insert ID to delete");
@@ -1336,7 +1341,7 @@ class login_ implements ActionListener {
             String replace;
             String programi[] = new String[collumn_count];
             System.out.println(collumn_count);
-            int programi_id[] = new int[collumn_count];;
+            int programi_id[] = new int[collumn_count];
             int i = 0;
             while (res.next()) {
                 String x = res.getString(1);
@@ -1345,7 +1350,7 @@ class login_ implements ActionListener {
                 String parts[];
                 parts = x.split(",");
                 replace = parts[0].replace("\"","");
-                programi[i] = replace; ///////////////////////////////////////////////////////////////////out of bounds
+                programi[i] = replace; 
                 programi_id[i] = Integer.parseInt(parts[1]);
                 i++;
             }
@@ -1354,7 +1359,7 @@ class login_ implements ActionListener {
             programLabel.setBounds(10, 50, 80, 25);
             panel_razredi.add(programLabel);
 
-            programiComboBox = new JComboBox(programi);
+            programiComboBox = new JComboBox<>(programi);
             programiComboBox.setBounds(125, 50, 165, 25);
             panel_razredi.add(programiComboBox);
 
@@ -1409,11 +1414,11 @@ class login_ implements ActionListener {
             program_kraticaText.setBounds(125, 80, 165, 25);
             panel_programi.add(program_kraticaText);
 
-            update_Button = new JButton("INSERT");
-            update_Button.setBounds(200, 115, 90, 25);
-            update_Button.addActionListener(new login_());
-            update_Button.setForeground(Color.white);
-            panel_programi.add(update_Button);
+            InsertButton = new JButton("INSERT");
+            InsertButton.setBounds(200, 115, 90, 25);
+            InsertButton.addActionListener(new login_());
+            InsertButton.setForeground(Color.white);
+            panel_programi.add(InsertButton);
 
             panel_programi.setLayout(null);
             frame_insert.add(panel_programi);
@@ -1491,7 +1496,7 @@ class login_ implements ActionListener {
             priimekText.setBounds(125, 50, 165, 25);
             panel_dijaki.add(priimekText);
 
-            JLabel datum_rojstvaLabel = new JLabel("Datum picker");
+            JLabel datum_rojstvaLabel = new JLabel("Datum picker");//////////////////////////////////////           datum picker
             datum_rojstvaLabel.setBounds(10, 80, 100, 25);
             panel_dijaki.add(datum_rojstvaLabel);
 
@@ -1499,32 +1504,90 @@ class login_ implements ActionListener {
             datum_rojstvaText.setBounds(125, 80, 165, 25);
             panel_dijaki.add(datum_rojstvaText);
 
-            JLabel spolLabel = new JLabel("Combobox");
+            String spoli[] = {"m","ž"};
+
+            JLabel spolLabel = new JLabel("Spol");
             spolLabel.setBounds(10, 110, 80, 25);
             panel_dijaki.add(spolLabel);
+            
+            dijaki_spoli_ComboBox = new JComboBox<>(spoli);
+            dijaki_spoli_ComboBox.setBounds(125, 110, 165, 25);
+            panel_dijaki.add(dijaki_spoli_ComboBox);
 
-            spolText = new JTextField(20);
-            spolText.setBounds(125, 110, 165, 25);
-            panel_dijaki.add(spolText);
-
-            JLabel kraj_idLabel = new JLabel("Combobox");
+            JLabel kraj_idLabel = new JLabel("Kraj");
             kraj_idLabel.setBounds(10, 140, 80, 25);
             panel_dijaki.add(kraj_idLabel);
 
-            kraj_idText = new JTextField(20);
-            kraj_idText.setBounds(125, 140, 165, 25);
-            panel_dijaki.add(kraj_idText);
+            //COMBOBOX
+            CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_kraji()}");
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.execute();
+            int collumn_count = cstmt.getInt(1);
+            cstmt.close();
 
-            JLabel razred_idLabel = new JLabel("Datum picker");
+            String query = "SELECT combo_box_kraj_dijaki()";
+            ResultSet res = stm.executeQuery(query);
+            String replace;
+            String kraji[] = new String[collumn_count];
+            System.out.println(collumn_count);
+            //int kraji_id[] = new int[collumn_count];
+            int i = 0;
+            while (res.next()) {
+                String x = res.getString(1);
+                x = x.replace("(", "");
+                x = x.replace(")", "");     
+                String parts[];
+                parts = x.split(",");
+                replace = parts[0].replace("\"","");
+                kraji[i] = replace; 
+                /*if(parts[1] != "")
+                {
+                    kraji_id[i] = Integer.parseInt(parts[1]);
+                }*/
+                
+                i++;
+            }
+            razredi_kraji_ComboBox = new JComboBox<>(kraji);
+            razredi_kraji_ComboBox.setBounds(125, 140, 165, 25);
+            panel_dijaki.add(razredi_kraji_ComboBox);
+
+            JLabel razred_idLabel = new JLabel("Razred");
             razred_idLabel.setBounds(10, 170, 100, 25);
             panel_dijaki.add(razred_idLabel);
 
-            razred_idText = new JTextField(20);
-            razred_idText.setBounds(125, 170, 165, 25);
-            panel_dijaki.add(razred_idText);
+            //COMBOBOX
+            CallableStatement cstmt1 = con.prepareCall("{?= CALL count_collumn_razredi()}");
+            cstmt1.registerOutParameter(1, Types.INTEGER);
+            cstmt1.execute();
+            int collumn_count1 = cstmt1.getInt(1);
+            cstmt1.close();
+
+            String query1 = "SELECT combo_box_razred_dijaki()";
+            ResultSet res1 = stm.executeQuery(query1);
+            String razredi[] = new String[collumn_count1];
+            System.out.println(collumn_count1);
+            //int kraji_id[] = new int[collumn_count];
+            int i2 = 0;
+            while (res1.next()) {
+                String x = res1.getString(1);
+                x = x.replace("(", "");
+                x = x.replace(")", "");     
+                razredi[i2] = x;
+                /*if(parts[1] != "")
+                {
+                    kraji_id[i] = Integer.parseInt(parts[1]);
+                }*/
+                
+                i2++;
+            }
+
+            
+            dijaki_razredi_ComboBox = new JComboBox<>(razredi);
+            dijaki_razredi_ComboBox.setBounds(125, 170, 165, 25);
+            panel_dijaki.add(dijaki_razredi_ComboBox);
 
             InsertButton = new JButton("INSERT");
-            InsertButton.setBounds(200, 115, 90, 25);
+            InsertButton.setBounds(200, 215, 90, 25);
             InsertButton.addActionListener(new login_());
             InsertButton.setForeground(Color.white);
             panel_dijaki.add(InsertButton);
@@ -1553,6 +1616,21 @@ public static void dodaj()
     String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
     String razred;
     int program_id_;
+
+    String program;
+    String program_kratica;
+    String program_opis;
+
+    String podkraj;
+    String posta;
+    String kraj_ime;
+
+    String dijaki_ime;
+    String dijak_priimek;
+    String datum_rojstva;
+    int kraj_id;
+    int razred_id;
+    String spol;
     try {
         Connection con = DriverManager.getConnection(url, username, password);
         if (view_database == "razredi") {
@@ -1561,9 +1639,11 @@ public static void dodaj()
             System.out.println(value);
 
             //id from text
-            CallableStatement cstmt1 = con.prepareCall("{?=CALL id_from_text(?)}");
+            CallableStatement cstmt1 = con.prepareCall("{?=CALL id_from_text(?,?,?)}");
             cstmt1.registerOutParameter(1, Types.INTEGER);
             cstmt1.setString(2,value);
+            cstmt1.setString(3,view_database);
+            cstmt1.setString(3,"a");
             cstmt1.execute();
             program_id_ = cstmt1.getInt(1);
             cstmt1.close();
@@ -1574,6 +1654,82 @@ public static void dodaj()
             cstmt.setInt(2, program_id_);
             cstmt.execute();
             cstmt.close();
+        }
+        if (view_database == "programi") {
+
+            program = program_imeText.getText();
+            program_kratica = opisText.getText();
+            program_opis = program_kraticaText.getText();
+
+            //insert to database
+            CallableStatement cstmt = con.prepareCall("{CALL add_programi(?,?,?)}");
+            cstmt.setString(1,program);
+            cstmt.setString(2, program_kratica);
+            cstmt.setString(3, program_opis);
+            cstmt.execute();
+            cstmt.close();
+
+        }
+        if (view_database == "kraji") {
+
+            kraj_ime = kraj_imeText.getText();
+            posta = postaText.getText();
+            podkraj = podkrajText.getText();
+            
+
+            //insert to database
+            CallableStatement cstmt = con.prepareCall("{CALL add_kraji(?,?,?)}");
+            cstmt.setString(1,kraj_ime);
+            cstmt.setString(2, posta);
+            cstmt.setString(3, podkraj);
+            cstmt.execute();
+            cstmt.close();
+
+        }
+        if (view_database == "dijaki") {
+
+            dijaki_ime = dijak_imeText.getText();
+            dijak_priimek = priimekText.getText();
+            datum_rojstva = datum_rojstvaText.getText();
+            String value1= razredi_kraji_ComboBox.getSelectedItem().toString();
+            String value2= dijaki_razredi_ComboBox.getSelectedItem().toString();
+            spol = dijaki_spoli_ComboBox.getSelectedItem().toString();
+            
+
+            //id from text kraj
+            CallableStatement cstmt = con.prepareCall("{?=CALL id_from_text(?,?,?)}");
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.setString(2,value1);
+            cstmt.setString(3,view_database);
+            cstmt.setString(4,"a");
+            cstmt.execute();
+            kraj_id = cstmt.getInt(1);
+            cstmt.close();
+            //System.out.println("do sm dela");
+            //id from text razred
+            CallableStatement cstmt2 = con.prepareCall("{?=CALL id_from_text(?,?,?)}");
+            cstmt2.registerOutParameter(1, Types.INTEGER);
+            cstmt2.setString(2,value2);
+            cstmt2.setString(3,view_database);
+            cstmt2.setString(4,"b");
+            cstmt2.execute();
+            razred_id = cstmt2.getInt(1);
+            cstmt2.close();
+
+            System.out.println(kraj_id);
+            System.out.println(razred_id);
+
+            //insert to database
+            CallableStatement cstmt1 = con.prepareCall("{CALL add_dijaki(?,?,?,?,?,?)}");
+            cstmt1.setString(1, dijaki_ime);
+            cstmt1.setString(2, dijak_priimek);
+            cstmt1.setString(3, datum_rojstva);//////////////////////////////////////////////                        posli timestamp
+            cstmt1.setString(4, spol);
+            cstmt1.setInt(5, kraj_id);
+            cstmt1.setInt(6, razred_id);
+            cstmt1.execute();
+            cstmt1.close();
+
         }
         menu();
         con.close();
