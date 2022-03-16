@@ -20,6 +20,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 //table
 import javax.swing.table.DefaultTableModel;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 public class App {
 
     public static void main(String[] args) throws Exception {
@@ -242,9 +245,10 @@ class login_ implements ActionListener {
             update();
         } else if (e.getSource() == insertButton) {
             insert();
-        }else if(e.getSource() == InsertButton)
-        {
+        }else if(e.getSource() == InsertButton){
             dodaj();
+        }else if(e.getSource() == update_Button){
+            posodobi();
         }
          else {
             System.out.println("button not in e.getsource");
@@ -1097,11 +1101,20 @@ class login_ implements ActionListener {
         }
         view();
     }
-
+//qqq_update
     public void update() {
-        if (view_database == "razredi") {
-            JFrame frame_update = new JFrame("razredi edit");
-           // frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String username = "ioztqmdz";
+        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
+        String izbran_id = updateText.getText();
+        int izbranID = Integer.valueOf(izbran_id);
+        try{
+            Connection con = DriverManager.getConnection(url, username, password);
+            java.sql.Statement stm = con.createStatement();
+
+            if (view_database == "razredi") {
+            JFrame frame_insert = new JFrame("razredi update");
+           // frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_razredi = new JPanel();
             panel_razredi.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1109,45 +1122,94 @@ class login_ implements ActionListener {
             kraticaLabel.setBounds(10, 20, 80, 25);
             panel_razredi.add(kraticaLabel);
 
-            razred_kraticaText = new JTextField(20);
-            razred_kraticaText.setBounds(125, 20, 165, 25);
-            panel_razredi.add(razred_kraticaText);
+            
+
+            CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_programi()}");
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.execute();
+            int collumn_count = cstmt.getInt(1);
+            cstmt.close();
+
+            String query = "SELECT combo_box_program_razredi()";
+            ResultSet res = stm.executeQuery(query);
+            String replace;
+            String programi[] = new String[collumn_count];
+            System.out.println(collumn_count);
+            int programi_id[] = new int[collumn_count];
+            int i = 0;
+            while (res.next()) {
+                String x = res.getString(1);
+                x = x.replace("(", "");
+                x = x.replace(")", "");     
+                String parts[];
+                parts = x.split(",");
+                replace = parts[0].replace("\"","");
+                programi[i] = replace; 
+                programi_id[i] = Integer.parseInt(parts[1]);
+                i++;
+            }
 
             JLabel programLabel = new JLabel("ComboBox");
             programLabel.setBounds(10, 50, 80, 25);
             panel_razredi.add(programLabel);
 
-            program_idText = new JTextField(20);
+            programiComboBox = new JComboBox<>(programi);
+            programiComboBox.setBounds(125, 50, 165, 25);
+            panel_razredi.add(programiComboBox);
+
+            /*program_idText = new JTextField(20);
             program_idText.setBounds(125, 50, 165, 25);
-            panel_razredi.add(program_idText);
+            panel_razredi.add(program_idText);*/
 
-            JLabel dijaki_countabel = new JLabel("Stevilo dijakov");
-            dijaki_countabel.setBounds(10, 80, 100, 25);
-            panel_razredi.add(dijaki_countabel);
-
-            dijaki_countText = new JTextField(20);
-            dijaki_countText.setBounds(125, 80, 165, 25);
-            panel_razredi.add(dijaki_countText);
-
-            update_Button = new JButton("INSERT");
+            update_Button = new JButton("UPDATE");
             update_Button.setBounds(200, 115, 90, 25);
             update_Button.addActionListener(new login_());
             update_Button.setForeground(Color.white);
             panel_razredi.add(update_Button);
 
             panel_razredi.setLayout(null);
-            frame_update.add(panel_razredi);
+            frame_insert.add(panel_razredi);
 
-            frame_update.setPreferredSize(new Dimension(350, 200));
-            frame_update.pack();
-            frame_update.setLocationRelativeTo(null);
-            frame_update.setVisible(true);
-            frame_update.setResizable(false);
-            
-        } else if (view_database == "programi") {
+            frame_insert.setPreferredSize(new Dimension(350, 200));
+            frame_insert.pack();
+            frame_insert.setLocationRelativeTo(null);
+            frame_insert.setVisible(true);
+            frame_insert.setResizable(false);
 
-            JFrame frame_update = new JFrame("programi edit");
-           // frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                String query3 = "SELECT view_razredi()";
+
+                Statement stm3 = con.createStatement();
+                ResultSet res3 = stm3.executeQuery(query3);
+                String _kratica_ = "";
+                int _program_id_ = 0;
+                while (res3.next()) {
+                String x3 = res3.getString(1);
+                x3 = x3.replace("(", "");
+                x3 = x3.replace(")", "");
+                String parts3[];
+                parts3 = x3.split(",");
+                _kratica_ = parts3[1];
+                _program_id_ = Integer.parseInt(parts3[2]);
+                //System.out.println("id je" + parts3[0]);
+                //System.out.println("mora bit" + izbran_id);
+                if(Integer.parseInt(parts3[0]) == izbranID)
+                {
+                   break;
+                }
+                }
+            razred_kraticaText = new JTextField(_kratica_);
+            razred_kraticaText.setBounds(125, 20, 165, 25);
+            panel_razredi.add(razred_kraticaText);
+
+            programiComboBox.setSelectedIndex(_program_id_ - 1);
+
+                
+        }
+        
+        else if (view_database == "programi") {
+
+            JFrame frame_insert = new JFrame("programi update");
+            //frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_programi = new JPanel();
             panel_programi.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1175,25 +1237,24 @@ class login_ implements ActionListener {
             program_kraticaText.setBounds(125, 80, 165, 25);
             panel_programi.add(program_kraticaText);
 
-            update_Button = new JButton("INSERT");
+            update_Button = new JButton("UPDATE");
             update_Button.setBounds(200, 115, 90, 25);
             update_Button.addActionListener(new login_());
             update_Button.setForeground(Color.white);
             panel_programi.add(update_Button);
 
             panel_programi.setLayout(null);
-            frame_update.add(panel_programi);
+            frame_insert.add(panel_programi);
 
-            frame_update.setPreferredSize(new Dimension(350, 200));
-            frame_update.pack();
-            frame_update.setLocationRelativeTo(null);
-            frame_update.setVisible(true);
-            frame_update.setResizable(false);
-
+            frame_insert.setPreferredSize(new Dimension(350, 200));
+            frame_insert.pack();
+            frame_insert.setLocationRelativeTo(null);
+            frame_insert.setVisible(true);
+            frame_insert.setResizable(false);
         } else if (view_database == "kraji") {
 
-            JFrame frame_update = new JFrame("kraji edit");
-          //  frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JFrame frame_insert = new JFrame("kraji update");
+       //     frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_kraji = new JPanel();
             panel_kraji.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1221,25 +1282,24 @@ class login_ implements ActionListener {
             podkrajText.setBounds(125, 80, 165, 25);
             panel_kraji.add(podkrajText);
 
-            update_Button = new JButton("INSERT");
+            update_Button = new JButton("UPDATE");
             update_Button.setBounds(200, 115, 90, 25);
             update_Button.addActionListener(new login_());
             update_Button.setForeground(Color.white);
             panel_kraji.add(update_Button);
 
             panel_kraji.setLayout(null);
-            frame_update.add(panel_kraji);
+            frame_insert.add(panel_kraji);
 
-            frame_update.setPreferredSize(new Dimension(350, 200));
-            frame_update.pack();
-            frame_update.setLocationRelativeTo(null);
-            frame_update.setVisible(true);
-            frame_update.setResizable(false);
-            
+            frame_insert.setPreferredSize(new Dimension(350, 200));
+            frame_insert.pack();
+            frame_insert.setLocationRelativeTo(null);
+            frame_insert.setVisible(true);
+            frame_insert.setResizable(false);
         } else if (view_database == "dijaki") {
 
-            JFrame frame_update = new JFrame("dijaki edit");
-          //  frame_update.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JFrame frame_insert = new JFrame("dijaki update");
+          //  frame_insert.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JPanel panel_dijaki = new JPanel();
             panel_dijaki.setBackground(new ColorUIResource(170, 170, 170));
 
@@ -1259,54 +1319,127 @@ class login_ implements ActionListener {
             priimekText.setBounds(125, 50, 165, 25);
             panel_dijaki.add(priimekText);
 
-            JLabel datum_rojstvaLabel = new JLabel("Datum picker");
+            JLabel datum_rojstvaLabel = new JLabel("Datum rojstva:");//////////////////////////////////////           datum picker
             datum_rojstvaLabel.setBounds(10, 80, 100, 25);
             panel_dijaki.add(datum_rojstvaLabel);
 
-            datum_rojstvaText = new JTextField(20);
+            
+
+            String date = "YYYY-MM-DD";
+            datum_rojstvaText = new JTextField(date);
             datum_rojstvaText.setBounds(125, 80, 165, 25);
             panel_dijaki.add(datum_rojstvaText);
 
-            JLabel spolLabel = new JLabel("Combobox");
+            datum_rojstvaText.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    datum_rojstvaText.setText("");
+                }
+              });
+
+            String spoli[] = {"m","ž"};
+
+            JLabel spolLabel = new JLabel("Spol");
             spolLabel.setBounds(10, 110, 80, 25);
             panel_dijaki.add(spolLabel);
+            
+            dijaki_spoli_ComboBox = new JComboBox<>(spoli);
+            dijaki_spoli_ComboBox.setBounds(125, 110, 165, 25);
+            panel_dijaki.add(dijaki_spoli_ComboBox);
 
-            spolText = new JTextField(20);
-            spolText.setBounds(125, 110, 165, 25);
-            panel_dijaki.add(spolText);
-
-            JLabel kraj_idLabel = new JLabel("Combobox");
+            JLabel kraj_idLabel = new JLabel("Kraj");
             kraj_idLabel.setBounds(10, 140, 80, 25);
             panel_dijaki.add(kraj_idLabel);
 
-            kraj_idText = new JTextField(20);
-            kraj_idText.setBounds(125, 140, 165, 25);
-            panel_dijaki.add(kraj_idText);
+            //COMBOBOX
+            CallableStatement cstmt = con.prepareCall("{?= CALL count_collumn_kraji()}");
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.execute();
+            int collumn_count = cstmt.getInt(1);
+            cstmt.close();
 
-            JLabel razred_idLabel = new JLabel("Datum picker");
+            String query = "SELECT combo_box_kraj_dijaki()";
+            ResultSet res = stm.executeQuery(query);
+            String replace;
+            String kraji[] = new String[collumn_count];
+            System.out.println(collumn_count);
+            //int kraji_id[] = new int[collumn_count];
+            int i = 0;
+            while (res.next()) {
+                String x = res.getString(1);
+                x = x.replace("(", "");
+                x = x.replace(")", "");     
+                String parts[];
+                parts = x.split(",");
+                replace = parts[0].replace("\"","");
+                kraji[i] = replace; 
+                /*if(parts[1] != "")
+                {
+                    kraji_id[i] = Integer.parseInt(parts[1]);
+                }*/
+                
+                i++;
+            }
+            razredi_kraji_ComboBox = new JComboBox<>(kraji);
+            razredi_kraji_ComboBox.setBounds(125, 140, 165, 25);
+            panel_dijaki.add(razredi_kraji_ComboBox);
+
+            JLabel razred_idLabel = new JLabel("Razred");
             razred_idLabel.setBounds(10, 170, 100, 25);
             panel_dijaki.add(razred_idLabel);
 
-            razred_idText = new JTextField(20);
-            razred_idText.setBounds(125, 170, 165, 25);
-            panel_dijaki.add(razred_idText);
+            //COMBOBOX
+            CallableStatement cstmt1 = con.prepareCall("{?= CALL count_collumn_razredi()}");
+            cstmt1.registerOutParameter(1, Types.INTEGER);
+            cstmt1.execute();
+            int collumn_count1 = cstmt1.getInt(1);
+            cstmt1.close();
 
-            update_Button = new JButton("INSERT");
-            update_Button.setBounds(200, 205, 90, 25);
+            String query1 = "SELECT combo_box_razred_dijaki()";
+            ResultSet res1 = stm.executeQuery(query1);
+            String razredi[] = new String[collumn_count1];
+            System.out.println(collumn_count1);
+            //int kraji_id[] = new int[collumn_count];
+            int i2 = 0;
+            while (res1.next()) {
+                String x = res1.getString(1);
+                x = x.replace("(", "");
+                x = x.replace(")", "");     
+                razredi[i2] = x;
+                /*if(parts[1] != "")
+                {
+                    kraji_id[i] = Integer.parseInt(parts[1]);
+                }*/
+                i2++;
+            }
+
+            
+            dijaki_razredi_ComboBox = new JComboBox<>(razredi);
+            dijaki_razredi_ComboBox.setBounds(125, 170, 165, 25);
+            panel_dijaki.add(dijaki_razredi_ComboBox);
+
+            update_Button = new JButton("UPDATE");
+            update_Button.setBounds(200, 215, 90, 25);
             update_Button.addActionListener(new login_());
             update_Button.setForeground(Color.white);
             panel_dijaki.add(update_Button);
-
             panel_dijaki.setLayout(null);
-            frame_update.add(panel_dijaki);
+            frame_insert.add(panel_dijaki);
 
-            frame_update.setPreferredSize(new Dimension(350, 280));
-            frame_update.pack();
-            frame_update.setLocationRelativeTo(null);
-            frame_update.setVisible(true);
-            frame_update.setResizable(false);
+            frame_insert.setPreferredSize(new Dimension(350, 280));
+            frame_insert.pack();
+            frame_insert.setLocationRelativeTo(null);
+            frame_insert.setVisible(true);
+            frame_insert.setResizable(false);
         }
+        con.close();
     }
+        catch (java.sql.SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+    
+}
     
     public static void insert() {
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
@@ -1496,13 +1629,23 @@ class login_ implements ActionListener {
             priimekText.setBounds(125, 50, 165, 25);
             panel_dijaki.add(priimekText);
 
-            JLabel datum_rojstvaLabel = new JLabel("Datum picker");//////////////////////////////////////           datum picker
+            JLabel datum_rojstvaLabel = new JLabel("Datum rojstva:");//////////////////////////////////////           datum picker
             datum_rojstvaLabel.setBounds(10, 80, 100, 25);
             panel_dijaki.add(datum_rojstvaLabel);
 
-            datum_rojstvaText = new JTextField(20);
+            
+
+            String date = "YYYY-MM-DD";
+            datum_rojstvaText = new JTextField(date);
             datum_rojstvaText.setBounds(125, 80, 165, 25);
             panel_dijaki.add(datum_rojstvaText);
+
+            datum_rojstvaText.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    datum_rojstvaText.setText("");
+                }
+              });
 
             String spoli[] = {"m","ž"};
 
@@ -1577,7 +1720,6 @@ class login_ implements ActionListener {
                 {
                     kraji_id[i] = Integer.parseInt(parts[1]);
                 }*/
-                
                 i2++;
             }
 
@@ -1739,6 +1881,75 @@ public static void dodaj()
             System.out.println(e.getMessage());
         }
         
+}
+
+public void posodobi()
+{
+    String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String username = "ioztqmdz";
+        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
+
+        String razred;
+    int program_id_;
+
+    String program;
+    String program_kratica;
+    String program_opis;
+
+    String podkraj;
+    String posta;
+    String kraj_ime;
+
+    String dijaki_ime;
+    String dijak_priimek;
+    String datum_rojstva;
+    int kraj_id;
+    int razred_id;
+    String spol;
+    
+        try {
+            Connection con = DriverManager.getConnection(url, username, password);
+
+            if (view_database == "dijaki") {
+                
+            }
+            if (view_database == "programi") {
+                
+            }
+            if (view_database == "razredi") {
+                    String izbran_id = updateText.getText();
+                    int izbranID = Integer.valueOf(izbran_id);
+                    razred = razred_kraticaText.getText();
+                    String value= programiComboBox.getSelectedItem().toString();
+                    System.out.println(value);
+        
+                    //id from text
+                    CallableStatement cstmt1 = con.prepareCall("{?=CALL id_from_text(?,?,?)}");
+                    cstmt1.registerOutParameter(1, Types.INTEGER);
+                    cstmt1.setString(2,value);
+                    cstmt1.setString(3,view_database);
+                    cstmt1.setString(4,"a");
+                    cstmt1.execute();
+                    program_id_ = cstmt1.getInt(1);
+                    cstmt1.close();
+        
+                    CallableStatement cstmt = con.prepareCall("{CALL update_razredi(?,?,?)}");
+                    cstmt.setString(1,razred);
+                    cstmt.setInt(2, program_id_);
+                    cstmt.setInt(3, izbranID);
+                    cstmt.execute();
+                    cstmt.close();   
+            }
+            if (view_database == "kraji") {
+                
+            }
+            con.close();
+        }
+
+        catch (java.sql.SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        view();
 }
 
 class FrameListner implements ComponentListener {
