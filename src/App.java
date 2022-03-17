@@ -724,7 +724,7 @@ class login_ implements ActionListener {
                     parts = x.split(",");
                     data[i][0] = parts[0];
                     data[i][1] = parts[1].replace("\"","");
-                    data[i][2] = parts[2];
+                    data[i][2] = parts[2].replace("\"","");
                     data[i][3] = parts[3];
                     i++;
                 }
@@ -1217,25 +1217,19 @@ class login_ implements ActionListener {
             programLabel.setBounds(10, 20, 80, 25);
             panel_programi.add(programLabel);
 
-            program_imeText = new JTextField(20);
-            program_imeText.setBounds(125, 20, 165, 25);
-            panel_programi.add(program_imeText);
+            
 
             JLabel opisabel = new JLabel("Opis");
             opisabel.setBounds(10, 50, 80, 25);
             panel_programi.add(opisabel);
 
-            opisText = new JTextField(20);
-            opisText.setBounds(125, 50, 165, 25);
-            panel_programi.add(opisText);
+            
 
             JLabel kraticaLabel = new JLabel("Kratica");
             kraticaLabel.setBounds(10, 80, 100, 25);
             panel_programi.add(kraticaLabel);
 
-            program_kraticaText = new JTextField(20);
-            program_kraticaText.setBounds(125, 80, 165, 25);
-            panel_programi.add(program_kraticaText);
+            
 
             update_Button = new JButton("UPDATE");
             update_Button.setBounds(200, 115, 90, 25);
@@ -1251,6 +1245,45 @@ class login_ implements ActionListener {
             frame_insert.setLocationRelativeTo(null);
             frame_insert.setVisible(true);
             frame_insert.setResizable(false);
+
+            String query = "SELECT view_programi()";
+
+                Statement stm1 = con.createStatement();
+                ResultSet res = stm1.executeQuery(query);
+                String _ime_ = "";
+                String _opis_ = "";
+                String _kratica_ = "";
+                
+                while (res.next()) {
+
+                    String x = res.getString(1);
+
+                    x = x.replace("(", "");
+                    x = x.replace(")", "");
+                    String parts[];
+                    parts = x.split(",");
+                    _ime_ = parts[1].replace("\"","");
+                    _opis_ = parts[2].replace("\"","");
+                    _kratica_ = parts[3];
+                    if(Integer.parseInt(parts[0]) == izbranID)
+                {
+                   break;
+                }
+                
+                    
+                }
+            program_imeText = new JTextField(_ime_);
+            program_imeText.setBounds(125, 20, 165, 25);
+            panel_programi.add(program_imeText);
+
+            opisText = new JTextField(_opis_);
+            opisText.setBounds(125, 50, 165, 25);
+            panel_programi.add(opisText);
+
+            program_kraticaText = new JTextField(_kratica_);
+            program_kraticaText.setBounds(125, 80, 165, 25);
+            panel_programi.add(program_kraticaText);
+
         } else if (view_database == "kraji") {
 
             JFrame frame_insert = new JFrame("kraji update");
@@ -1909,16 +1942,26 @@ public void posodobi()
     
         try {
             Connection con = DriverManager.getConnection(url, username, password);
-
+            String izbran_id = updateText.getText();
+            int izbranID = Integer.valueOf(izbran_id);
             if (view_database == "dijaki") {
                 
             }
             if (view_database == "programi") {
-                
+                program = program_imeText.getText();
+                program_kratica = program_kraticaText.getText();
+                program_opis = opisText.getText();
+    
+                //update
+                CallableStatement cstmt = con.prepareCall("{CALL update_programi(?,?,?,?)}");
+                cstmt.setString(1,program);
+                cstmt.setString(2, program_kratica);
+                cstmt.setString(3, program_opis);
+                cstmt.setInt(4, izbranID);
+                cstmt.execute();
+                cstmt.close();   
             }
             if (view_database == "razredi") {
-                    String izbran_id = updateText.getText();
-                    int izbranID = Integer.valueOf(izbran_id);
                     razred = razred_kraticaText.getText();
                     String value= programiComboBox.getSelectedItem().toString();
                     System.out.println(value);
@@ -1933,6 +1976,7 @@ public void posodobi()
                     program_id_ = cstmt1.getInt(1);
                     cstmt1.close();
         
+                    //update
                     CallableStatement cstmt = con.prepareCall("{CALL update_razredi(?,?,?)}");
                     cstmt.setString(1,razred);
                     cstmt.setInt(2, program_id_);
