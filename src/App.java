@@ -1372,35 +1372,17 @@ class login_ implements ActionListener {
             imeLabel.setBounds(10, 20, 80, 25);
             panel_dijaki.add(imeLabel);
 
-            dijak_imeText = new JTextField(20);
-            dijak_imeText.setBounds(125, 20, 165, 25);
-            panel_dijaki.add(dijak_imeText);
+            
 
             JLabel priimekLabel = new JLabel("Priimek");
             priimekLabel.setBounds(10, 50, 80, 25);
             panel_dijaki.add(priimekLabel);
 
-            priimekText = new JTextField(20);
-            priimekText.setBounds(125, 50, 165, 25);
-            panel_dijaki.add(priimekText);
+            
 
             JLabel datum_rojstvaLabel = new JLabel("Datum rojstva:");//////////////////////////////////////           datum picker
             datum_rojstvaLabel.setBounds(10, 80, 100, 25);
             panel_dijaki.add(datum_rojstvaLabel);
-
-            
-
-            String date = "YYYY-MM-DD";
-            datum_rojstvaText = new JTextField(date);
-            datum_rojstvaText.setBounds(125, 80, 165, 25);
-            panel_dijaki.add(datum_rojstvaText);
-
-            datum_rojstvaText.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    datum_rojstvaText.setText("");
-                }
-              });
 
             String spoli[] = {"m","ž"};
 
@@ -1408,10 +1390,7 @@ class login_ implements ActionListener {
             spolLabel.setBounds(10, 110, 80, 25);
             panel_dijaki.add(spolLabel);
             
-            dijaki_spoli_ComboBox = new JComboBox<>(spoli);
-            dijaki_spoli_ComboBox.setBounds(125, 110, 165, 25);
-            panel_dijaki.add(dijaki_spoli_ComboBox);
-
+            
             JLabel kraj_idLabel = new JLabel("Kraj");
             kraj_idLabel.setBounds(10, 140, 80, 25);
             panel_dijaki.add(kraj_idLabel);
@@ -1445,9 +1424,7 @@ class login_ implements ActionListener {
                 
                 i++;
             }
-            razredi_kraji_ComboBox = new JComboBox<>(kraji);
-            razredi_kraji_ComboBox.setBounds(125, 140, 165, 25);
-            panel_dijaki.add(razredi_kraji_ComboBox);
+            
 
             JLabel razred_idLabel = new JLabel("Razred");
             razred_idLabel.setBounds(10, 170, 100, 25);
@@ -1479,9 +1456,7 @@ class login_ implements ActionListener {
             }
 
             
-            dijaki_razredi_ComboBox = new JComboBox<>(razredi);
-            dijaki_razredi_ComboBox.setBounds(125, 170, 165, 25);
-            panel_dijaki.add(dijaki_razredi_ComboBox);
+            
 
             update_Button = new JButton("UPDATE");
             update_Button.setBounds(200, 215, 90, 25);
@@ -1496,6 +1471,64 @@ class login_ implements ActionListener {
             frame_insert.setLocationRelativeTo(null);
             frame_insert.setVisible(true);
             frame_insert.setResizable(false);
+
+            String query2 = "SELECT view_dijaki()";
+
+                Statement stm2 = con.createStatement();
+                ResultSet res2 = stm2.executeQuery(query2);
+                String _ime_ = "";
+                String _priimek_ = "";
+                String _datum_rojstva_ = "";
+                String _spol_ = "";
+                int _kraj_id_ = 0;
+                int _razred_id_ = 0;
+                
+                while (res2.next()) {
+
+                    String x = res2.getString(1);
+
+                    x = x.replace("(", "");
+                    x = x.replace(")", "");
+                    String parts[];
+                    parts = x.split(",");
+                    _ime_ = parts[1].replace("\"","");
+                    _priimek_ = parts[2].replace("\"","");
+                    _datum_rojstva_ = parts[3].replace("\"","");
+                    _spol_ = parts[4];
+                    _kraj_id_ = Integer.parseInt(parts[5]);
+                    _razred_id_ = Integer.parseInt(parts[6]);
+                    if(Integer.parseInt(parts[0]) == izbranID)
+                {
+                   break;
+                } 
+                }
+            dijak_imeText = new JTextField(_ime_);
+            dijak_imeText.setBounds(125, 20, 165, 25);
+            panel_dijaki.add(dijak_imeText);
+
+            priimekText = new JTextField(_priimek_);
+            priimekText.setBounds(125, 50, 165, 25);
+            panel_dijaki.add(priimekText);
+
+            dijaki_spoli_ComboBox = new JComboBox<>(spoli);
+            dijaki_spoli_ComboBox.setBounds(125, 110, 165, 25);
+            panel_dijaki.add(dijaki_spoli_ComboBox);
+            dijaki_spoli_ComboBox.setSelectedItem(_spol_);
+
+            razredi_kraji_ComboBox = new JComboBox<>(kraji);
+            razredi_kraji_ComboBox.setBounds(125, 140, 165, 25);
+            panel_dijaki.add(razredi_kraji_ComboBox);
+            razredi_kraji_ComboBox.setSelectedIndex(_kraj_id_);
+
+            dijaki_razredi_ComboBox = new JComboBox<>(razredi);
+            dijaki_razredi_ComboBox.setBounds(125, 170, 165, 25);
+            panel_dijaki.add(dijaki_razredi_ComboBox);
+            dijaki_razredi_ComboBox.setSelectedIndex(_razred_id_ - 1);
+
+            datum_rojstvaText = new JTextField(_datum_rojstva_.replace("00:00:00", ""));
+            datum_rojstvaText.setBounds(125, 80, 165, 25);
+            panel_dijaki.add(datum_rojstvaText);
+
         }
         con.close();
     }
@@ -1912,7 +1945,6 @@ public static void dodaj()
             cstmt.execute();
             kraj_id = cstmt.getInt(1);
             cstmt.close();
-            //System.out.println("do sm dela");
             //id from text razred
             CallableStatement cstmt2 = con.prepareCall("{?=CALL id_from_text(?,?,?)}");
             cstmt2.registerOutParameter(1, Types.INTEGER);
@@ -1977,7 +2009,40 @@ public void posodobi()
             String izbran_id = updateText.getText();
             int izbranID = Integer.valueOf(izbran_id);
             if (view_database == "dijaki") {
-                
+                dijaki_ime = dijak_imeText.getText();
+                dijak_priimek = priimekText.getText();
+                datum_rojstva = datum_rojstvaText.getText();
+                String value1= razredi_kraji_ComboBox.getSelectedItem().toString();
+            String value2= dijaki_razredi_ComboBox.getSelectedItem().toString();
+            spol = dijaki_spoli_ComboBox.getSelectedItem().toString();
+
+            CallableStatement cstmt = con.prepareCall("{?=CALL id_from_text(?,?,?)}");
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.setString(2,value1);
+            cstmt.setString(3,view_database);
+            cstmt.setString(4,"a");
+            cstmt.execute();
+            kraj_id = cstmt.getInt(1);
+            cstmt.close();
+            //id from text razred
+            CallableStatement cstmt2 = con.prepareCall("{?=CALL id_from_text(?,?,?)}");
+            cstmt2.registerOutParameter(1, Types.INTEGER);
+            cstmt2.setString(2,value2);
+            cstmt2.setString(3,view_database);
+            cstmt2.setString(4,"b");
+            cstmt2.execute();
+            razred_id = cstmt2.getInt(1);
+            cstmt2.close();
+
+            CallableStatement cstmt3 = con.prepareCall("{CALL update_dijaki(?,?,?,?,?,?,?)}");
+                cstmt3.setString(1,dijaki_ime);
+                cstmt3.setString(2, dijak_priimek);
+                cstmt3.setString(3, datum_rojstva);
+                cstmt3.setString(4,spol);
+                cstmt3.setInt(5, kraj_id);
+                cstmt3.setInt(6, razred_id);
+                cstmt3.setInt(7, izbranID);
+                cstmt3.execute();
             }
             if (view_database == "programi") {
                 program = program_imeText.getText();
