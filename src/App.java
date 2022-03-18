@@ -1268,9 +1268,7 @@ class login_ implements ActionListener {
                     if(Integer.parseInt(parts[0]) == izbranID)
                 {
                    break;
-                }
-                
-                    
+                } 
                 }
             program_imeText = new JTextField(_ime_);
             program_imeText.setBounds(125, 20, 165, 25);
@@ -1295,25 +1293,19 @@ class login_ implements ActionListener {
             imeLabel.setBounds(10, 20, 80, 25);
             panel_kraji.add(imeLabel);
 
-            kraj_imeText = new JTextField(20);
-            kraj_imeText.setBounds(125, 20, 165, 25);
-            panel_kraji.add(kraj_imeText);
+            
 
             JLabel postaLabel = new JLabel("Posta");
             postaLabel.setBounds(10, 50, 80, 25);
             panel_kraji.add(postaLabel);
 
-            postaText = new JTextField(20);
-            postaText.setBounds(125, 50, 165, 25);
-            panel_kraji.add(postaText);
+            
 
             JLabel podkrajLabel = new JLabel("Podkraji");
             podkrajLabel.setBounds(10, 80, 100, 25);
             panel_kraji.add(podkrajLabel);
 
-            podkrajText = new JTextField(20);
-            podkrajText.setBounds(125, 80, 165, 25);
-            panel_kraji.add(podkrajText);
+            
 
             update_Button = new JButton("UPDATE");
             update_Button.setBounds(200, 115, 90, 25);
@@ -1329,6 +1321,46 @@ class login_ implements ActionListener {
             frame_insert.setLocationRelativeTo(null);
             frame_insert.setVisible(true);
             frame_insert.setResizable(false);
+
+            String query = "SELECT view_kraji()";
+
+                Statement stm1 = con.createStatement();
+                ResultSet res = stm1.executeQuery(query);
+                String _ime_ = "";
+                String _posta_ = "";
+                String _prodkraji_ = "";
+                
+                while (res.next()) {
+
+                    String x = res.getString(1);
+
+                    x = x.replace("(", "");
+                    x = x.replace(")", "");
+                    String parts[];
+                    parts = x.split(",");
+                    _ime_ = parts[1].replace("\"","");
+                    _posta_ = parts[2].replace("\"","");
+                    _prodkraji_ = parts[3].replace("\"","");
+                    if(Integer.parseInt(parts[0]) == izbranID)
+                {
+                   break;
+                } 
+                }
+
+                kraj_imeText = new JTextField(_ime_);
+            kraj_imeText.setBounds(125, 20, 165, 25);
+            panel_kraji.add(kraj_imeText);
+
+            postaText = new JTextField(_posta_);
+            postaText.setBounds(125, 50, 165, 25);
+            panel_kraji.add(postaText);
+
+            podkrajText = new JTextField(_prodkraji_);
+            podkrajText.setBounds(125, 80, 165, 25);
+            panel_kraji.add(podkrajText);
+
+
+
         } else if (view_database == "dijaki") {
 
             JFrame frame_insert = new JFrame("dijaki update");
@@ -1982,10 +2014,21 @@ public void posodobi()
                     cstmt.setInt(2, program_id_);
                     cstmt.setInt(3, izbranID);
                     cstmt.execute();
-                    cstmt.close();   
+                    cstmt.close();
             }
             if (view_database == "kraji") {
-                
+                podkraj = podkrajText.getText();
+                posta = postaText.getText();
+                kraj_ime = kraj_imeText.getText();
+
+                //update
+                CallableStatement cstmt = con.prepareCall("{CALL update_kraji(?,?,?,?)}");
+                cstmt.setString(1,kraj_ime);
+                cstmt.setString(2, posta);
+                cstmt.setString(3, podkraj);
+                cstmt.setInt(4, izbranID);
+                cstmt.execute();
+                cstmt.close();
             }
             con.close();
         }
