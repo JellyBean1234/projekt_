@@ -69,6 +69,14 @@ class login_ implements ActionListener {
     public static JLabel passwordLabel;
     public static JTextField passwordText;
     public static JButton loginButton;
+    public static JButton registerButton;
+    public static JLabel registerLabel;
+    public static JTextField userText_register;
+    public static JTextField passwordText_register;
+    public static JLabel success_register;
+    public static JButton loginButton_register;
+    public static JTextField imeText_register;
+    public static JTextField priimekText_register;
 
     public static JButton razrediButton;
     public static JButton programiButton;
@@ -135,7 +143,7 @@ class login_ implements ActionListener {
         panel.setBackground(new ColorUIResource(170, 170, 170));
         frame.add(panel);
         placeComponents(panel);
-        frame.setPreferredSize(new Dimension(300, 160));
+        frame.setPreferredSize(new Dimension(300, 200));
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -177,6 +185,16 @@ class login_ implements ActionListener {
         loginButton.addActionListener(new login_());
         panel.add(loginButton);
 
+        registerButton = new JButton("Register");
+        registerButton.setBounds(160, 120, 100, 25);
+        registerButton.setForeground(Color.white);
+        registerButton.addActionListener(new login_());
+        panel.add(registerButton);
+
+        registerLabel = new JLabel("Register new account:");
+        registerLabel.setBounds(10, 120, 130, 25);
+        panel.add(registerLabel);
+
         success = new JLabel("");
         success.setBounds(30, 85, 300, 25);
         success.setForeground(new ColorUIResource(153, 0, 0));
@@ -184,32 +202,73 @@ class login_ implements ActionListener {
         
     }
 
+    public void register()
+    {
+        JFrame frame = new JFrame("REGISTER");
+        JPanel panel = new JPanel();
+        panel.setBackground(new ColorUIResource(170, 170, 170));
+        frame.add(panel);
+        placeComponents_register(panel);
+        frame.setPreferredSize(new Dimension(300, 250));
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        frame.setResizable(false);
+    }
+
+    private static void placeComponents_register(JPanel panel) {
+
+        panel.setLayout(null);
+
+        userLabel = new JLabel("User");
+        userLabel.setBounds(10, 20, 80, 25);
+        panel.add(userLabel);
+
+        userText_register = new JTextField(20);
+        userText_register.setBounds(100, 20, 165, 25);
+        panel.add(userText_register);
+
+        passwordLabel = new JLabel("Password");
+        passwordLabel.setBounds(10, 50, 80, 25);
+        panel.add(passwordLabel);
+
+        passwordText_register = new JPasswordField(20);
+        passwordText_register.setBounds(100, 50, 165, 25);
+        panel.add(passwordText_register);
+
+        userLabel = new JLabel("Ime");
+        userLabel.setBounds(10, 80, 80, 25);
+        panel.add(userLabel);   
+
+        imeText_register = new JTextField(20);
+        imeText_register.setBounds(100, 80, 165, 25);
+        panel.add(imeText_register);
+
+        passwordLabel = new JLabel("Priimek");
+        passwordLabel.setBounds(10, 110, 80, 25);
+        panel.add(passwordLabel);
+
+        priimekText_register = new JPasswordField(20);
+        priimekText_register.setBounds(100, 110, 165, 25);
+        panel.add(priimekText_register);
+
+        loginButton_register = new JButton("Register");
+        loginButton_register.setBounds(150, 150, 110, 25);
+        loginButton_register.setForeground(Color.white);
+        loginButton_register.addActionListener(new login_());
+        panel.add(loginButton_register);
+
+        success_register = new JLabel("");
+        success_register.setBounds(30, 85, 300, 25);
+        success_register.setForeground(new ColorUIResource(153, 0, 0));
+        panel.add(success_register);
+        
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == loginButton) {
-            String user = userText.getText();
-            String pass = passwordText.getText();
-            try {
-                Connection db = DriverManager.getConnection(url, username, password);
-                // java.sql.Statement st = db.createStatement();
-                CallableStatement cstmt = db.prepareCall("{?= CALL prijava(?, ?)}");
-                cstmt.registerOutParameter(1, Types.INTEGER);
-                cstmt.setString(2, user);
-                cstmt.setString(3, pass);
-                cstmt.execute();
-                Integer result = cstmt.getInt(1);
-                // System.out.println(result + "");
-                cstmt.close();
-                if (result == 1) {
-                    menu();
-                } else {
-                    success.setText("Prijava ni uspešna");
-                }
-                db.close();
-            } catch (java.sql.SQLException exception) {
-                System.out.println(exception.getMessage());
-            }
-
+            login();
         }
 
         else if (e.getSource() == razrediButton) {
@@ -250,14 +309,55 @@ class login_ implements ActionListener {
         }else if(e.getSource() == update_Button){
             posodobi();
         }
+        else if(e.getSource() == registerButton){
+            register();
+        }
+        else if(e.getSource() == registerButton){
+            register();
+        }
+        else if(e.getSource() == loginButton_register){
+            register_insert();
+        }
          else {
             System.out.println("button not in e.getsource");
         }
     }
 
+    public void login()
+    {
+        String user = userText.getText();
+        String pass = passwordText.getText();
+            try {
+                Connection db = DriverManager.getConnection(url, username, password);
+                // java.sql.Statement st = db.createStatement();
+                CallableStatement cstmt = db.prepareCall("{?= CALL prijava(?, ?)}");
+                cstmt.registerOutParameter(1, Types.INTEGER);
+                cstmt.setString(2, user);
+                cstmt.setString(3, pass);
+                cstmt.execute();
+                Integer result = cstmt.getInt(1);
+                // System.out.println(result + "");
+                cstmt.close();
+                if (result == 1) {
+                    menu();
+                } else {
+                    success.setText("Prijava ni uspešna");
+                }
+                db.close();
+            } catch (java.sql.SQLException exception) {
+                System.out.println(exception.getMessage());
+            }
+    }
+    public void register_insert()
+    {
+        /*String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String username = "ioztqmdz";
+        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";*/
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////insert in database admins
+    }
     public static void menu() {
         JFrame frame_menu = new JFrame("MENU");
-       // frame_menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       // frame_menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         JPanel panel_menu = new JPanel();
         panel_menu.setBackground(new ColorUIResource(170, 170, 170));
         frame_menu.add(panel_menu);
@@ -314,276 +414,7 @@ class login_ implements ActionListener {
         logsButton.setForeground(Color.white);
         logsButton.addActionListener(new login_());
         panel_menu.add(logsButton);
-    }/*
-      * public static void razredi(){
-      * JFrame frame_razredi = new JFrame("Razredi");
-      * frame_razredi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      * JPanel panel_razredi = new JPanel();
-      * panel_razredi.setBackground(new ColorUIResource(170,170,170));
-      * frame_razredi.add(panel_razredi);
-      * placeComponents_razredi(panel_razredi);
-      * frame_razredi.setPreferredSize(new Dimension(300, 175));
-      * frame_razredi.pack();
-      * frame_razredi.setLocationRelativeTo(null);
-      * frame_razredi.setVisible(true);
-      * }
-      * 
-      * private static void placeComponents_razredi(JPanel panel_razredi) {
-      * panel_razredi.setLayout(null);
-      * 
-      * LinkedList<Object> a=new LinkedList<Object>();
-      * a.add(0.2);
-      * a.add(0.2);
-      * a.add(new ColorUIResource(0,0,0));
-      * a.add(new ColorUIResource(50,50,50));
-      * a.add(new ColorUIResource(100,100,100));
-      * a.add(new ColorUIResource(150,150,150));
-      * a.add(new ColorUIResource(200,200,200));
-      * UIManager.put("Button.gradient",a);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * viewButton = new JButton("VIEW");
-      * viewButton.setBounds(100, 10, 90, 25);
-      * viewButton.setForeground(Color.white);
-      * viewButton.addActionListener(new login_());
-      * panel_razredi.add(viewButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * addButton = new JButton("ADD");
-      * addButton.setBounds(100, 40, 90, 25);
-      * addButton.setForeground(Color.white);
-      * addButton.addActionListener(new login_());
-      * panel_razredi.add(addButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * editButton = new JButton("EDIT");
-      * editButton.setBounds(100, 70, 90, 25);
-      * editButton.setForeground(Color.white);
-      * editButton.addActionListener(new login_());
-      * panel_razredi.add(editButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * DeleteButton = new JButton("DELETE");
-      * DeleteButton.setBounds(100, 100, 90, 25);
-      * DeleteButton.setForeground(Color.white);
-      * DeleteButton.addActionListener(new login_());
-      * panel_razredi.add(DeleteButton);
-      * }
-      * 
-      * public static void programi(){
-      * JFrame frame_programi = new JFrame("Programi");
-      * frame_programi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      * JPanel panel_programi = new JPanel();
-      * panel_programi.setBackground(new ColorUIResource(170,170,170));
-      * frame_programi.add(panel_programi);
-      * placeComponents_programi(panel_programi);
-      * frame_programi.setPreferredSize(new Dimension(300, 175));
-      * frame_programi.pack();
-      * frame_programi.setLocationRelativeTo(null);
-      * frame_programi.setVisible(true);
-      * }
-      * 
-      * private static void placeComponents_programi(JPanel panel_programi) {
-      * panel_programi.setLayout(null);
-      * 
-      * LinkedList<Object> a=new LinkedList<Object>();
-      * a.add(0.2);
-      * a.add(0.2);
-      * a.add(new ColorUIResource(0,0,0));
-      * a.add(new ColorUIResource(50,50,50));
-      * a.add(new ColorUIResource(100,100,100));
-      * a.add(new ColorUIResource(150,150,150));
-      * a.add(new ColorUIResource(200,200,200));
-      * UIManager.put("Button.gradient",a);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * viewButton = new JButton("VIEW");
-      * viewButton.setBounds(100, 10, 90, 25);
-      * viewButton.setForeground(Color.white);
-      * viewButton.addActionListener(new login_());
-      * panel_programi.add(viewButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * addButton = new JButton("ADD");
-      * addButton.setBounds(100, 40, 90, 25);
-      * addButton.setForeground(Color.white);
-      * addButton.addActionListener(new login_());
-      * panel_programi.add(addButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * editButton = new JButton("EDIT");
-      * editButton.setBounds(100, 70, 90, 25);
-      * editButton.setForeground(Color.white);
-      * editButton.addActionListener(new login_());
-      * panel_programi.add(editButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * DeleteButton = new JButton("DELETE");
-      * DeleteButton.setBounds(100, 100, 90, 25);
-      * DeleteButton.setForeground(Color.white);
-      * DeleteButton.addActionListener(new login_());
-      * panel_programi.add(DeleteButton);
-      * }
-      * 
-      * public static void dijaki(){
-      * JFrame frame_dijaki = new JFrame("Dijaki");
-      * frame_dijaki.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      * JPanel panel_dijaki = new JPanel();
-      * panel_dijaki.setBackground(new ColorUIResource(170,170,170));
-      * frame_dijaki.add(panel_dijaki);
-      * placeComponents_dijaki(panel_dijaki);
-      * frame_dijaki.setPreferredSize(new Dimension(300, 175));
-      * frame_dijaki.pack();
-      * frame_dijaki.setLocationRelativeTo(null);
-      * frame_dijaki.setVisible(true);
-      * }
-      * 
-      * private static void placeComponents_dijaki(JPanel panel_dijaki) {
-      * panel_dijaki.setLayout(null);
-      * 
-      * LinkedList<Object> a=new LinkedList<Object>();
-      * a.add(0.2);
-      * a.add(0.2);
-      * a.add(new ColorUIResource(0,0,0));
-      * a.add(new ColorUIResource(50,50,50));
-      * a.add(new ColorUIResource(100,100,100));
-      * a.add(new ColorUIResource(150,150,150));
-      * a.add(new ColorUIResource(200,200,200));
-      * UIManager.put("Button.gradient",a);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * viewButton = new JButton("VIEW");
-      * viewButton.setBounds(100, 10, 90, 25);
-      * viewButton.setForeground(Color.white);
-      * viewButton.addActionListener(new login_());
-      * panel_dijaki.add(viewButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * addButton = new JButton("ADD");
-      * addButton.setBounds(100, 40, 90, 25);
-      * addButton.setForeground(Color.white);
-      * addButton.addActionListener(new login_());
-      * panel_dijaki.add(addButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * editButton = new JButton("EDIT");
-      * editButton.setBounds(100, 70, 90, 25);
-      * editButton.setForeground(Color.white);
-      * editButton.addActionListener(new login_());
-      * panel_dijaki.add(editButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * DeleteButton = new JButton("DELETE");
-      * DeleteButton.setBounds(100, 100, 90, 25);
-      * DeleteButton.setForeground(Color.white);
-      * DeleteButton.addActionListener(new login_());
-      * panel_dijaki.add(DeleteButton);
-      * }
-      * 
-      * public static void kraji(){
-      * JFrame frame_kraji = new JFrame("Kraji");
-      * frame_kraji.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      * JPanel panel_kraji = new JPanel();
-      * panel_kraji.setBackground(new ColorUIResource(170,170,170));
-      * frame_kraji.add(panel_kraji);
-      * placeComponents_kraji(panel_kraji);
-      * frame_kraji.setPreferredSize(new Dimension(300, 175));
-      * frame_kraji.pack();
-      * frame_kraji.setLocationRelativeTo(null);
-      * frame_kraji.setVisible(true);
-      * }
-      * 
-      * private static void placeComponents_kraji(JPanel panel_kraji) {
-      * panel_kraji.setLayout(null);
-      * 
-      * LinkedList<Object> a=new LinkedList<Object>();
-      * a.add(0.2);
-      * a.add(0.2);
-      * a.add(new ColorUIResource(0,0,0));
-      * a.add(new ColorUIResource(50,50,50));
-      * a.add(new ColorUIResource(100,100,100));
-      * a.add(new ColorUIResource(150,150,150));
-      * a.add(new ColorUIResource(200,200,200));
-      * UIManager.put("Button.gradient",a);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * viewButton = new JButton("VIEW");
-      * viewButton.setBounds(100, 10, 90, 25);
-      * viewButton.setForeground(Color.white);
-      * viewButton.addActionListener(new login_());
-      * panel_kraji.add(viewButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * addButton = new JButton("ADD");
-      * addButton.setBounds(100, 40, 90, 25);
-      * addButton.setForeground(Color.white);
-      * addButton.addActionListener(new login_());
-      * panel_kraji.add(addButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * editButton = new JButton("EDIT");
-      * editButton.setBounds(100, 70, 90, 25);
-      * editButton.setForeground(Color.white);
-      * editButton.addActionListener(new login_());
-      * panel_kraji.add(editButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * DeleteButton = new JButton("DELETE");
-      * DeleteButton.setBounds(100, 100, 90, 25);
-      * DeleteButton.setForeground(Color.white);
-      * DeleteButton.addActionListener(new login_());
-      * panel_kraji.add(DeleteButton);
-      * }
-      * 
-      * public static void logs(){
-      * JFrame frame_logs = new JFrame("Logs");
-      * frame_logs.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      * JPanel panel_logs = new JPanel();
-      * panel_logs.setBackground(new ColorUIResource(170,170,170));
-      * frame_logs.add(panel_logs);
-      * placeComponents_logs(panel_logs);
-      * frame_logs.setPreferredSize(new Dimension(300, 175));
-      * frame_logs.pack();
-      * frame_logs.setLocationRelativeTo(null);
-      * frame_logs.setVisible(true);
-      * }
-      * 
-      * private static void placeComponents_logs(JPanel panel_logs) {
-      * panel_logs.setLayout(null);
-      * 
-      * LinkedList<Object> a=new LinkedList<Object>();
-      * a.add(0.2);
-      * a.add(0.2);
-      * a.add(new ColorUIResource(0,0,0));
-      * a.add(new ColorUIResource(50,50,50));
-      * a.add(new ColorUIResource(100,100,100));
-      * a.add(new ColorUIResource(150,150,150));
-      * a.add(new ColorUIResource(200,200,200));
-      * UIManager.put("Button.gradient",a);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * viewButton = new JButton("VIEW");
-      * viewButton.setBounds(100, 10, 90, 25);
-      * viewButton.setForeground(Color.white);
-      * viewButton.addActionListener(new login_());
-      * panel_logs.add(viewButton);
-      * 
-      * 
-      * UIManager.put("Button.gradient",a);
-      * editButton = new JButton("EDIT");
-      * editButton.setBounds(100, 40, 90, 25);
-      * editButton.setForeground(Color.white);
-      * editButton.addActionListener(new login_());
-      * panel_logs.add(editButton);
-      * 
-      * UIManager.put("Button.gradient",a);
-      * DeleteButton = new JButton("DELETE");
-      * DeleteButton.setBounds(100, 70, 90, 25);
-      * DeleteButton.setForeground(Color.white);
-      * DeleteButton.addActionListener(new login_());
-      * panel_logs.add(DeleteButton);
-      * }
-      */
+    }
 
     public String izbran_id;
     public int j = 0;
@@ -696,6 +527,18 @@ class login_ implements ActionListener {
 
                 razredi_frame.setResizable(false);
 
+                table.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                      if (e.getClickCount() == 1) {
+                        JTable target = (JTable)e.getSource();
+                        int row = target.getSelectedRow();
+                        int value = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+                        System.out.println(value);
+                        deleteText.setText(value + "");
+                        updateText.setText(value + "");
+                      }
+                    }
+                  });
             }
 
             if (view_database == "programi") {
@@ -784,6 +627,19 @@ class login_ implements ActionListener {
                 insertButton.addActionListener(new login_());
                 insertButton.setForeground(Color.white);
                 panel.add(insertButton);
+
+                table.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                      if (e.getClickCount() == 1) {
+                        JTable target = (JTable)e.getSource();
+                        int row = target.getSelectedRow();
+                        int value = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+                        System.out.println(value);
+                        deleteText.setText(value + "");
+                        updateText.setText(value + "");
+                      }
+                    }
+                  });
             }
             if (view_database == "dijaki") {
                 String query = "SELECT view_dijaki()";
@@ -878,6 +734,18 @@ class login_ implements ActionListener {
                 insertButton.addActionListener(new login_());
                 insertButton.setForeground(Color.white);
                 panel.add(insertButton);
+                table.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                      if (e.getClickCount() == 1) {
+                        JTable target = (JTable)e.getSource();
+                        int row = target.getSelectedRow();
+                        int value = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+                        System.out.println(value);
+                        deleteText.setText(value + "");
+                        updateText.setText(value + "");
+                      }
+                    }
+                  });
 
             }
             if (view_database == "kraji") {  ///zamenjaj select z podgprogramom/////////////////////////////////////////////////////////////////////
@@ -968,6 +836,19 @@ class login_ implements ActionListener {
                 insertButton.addActionListener(new login_());
                 insertButton.setForeground(Color.white);
                 panel.add(insertButton);
+
+                table.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                      if (e.getClickCount() == 1) {
+                        JTable target = (JTable)e.getSource();
+                        int row = target.getSelectedRow();
+                        int value = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+                        System.out.println(value);
+                        deleteText.setText(value + "");
+                        updateText.setText(value + "");
+                      }
+                    }
+                  });
             }
             if (view_database == "logs") {
                 String query = "SELECT view_dijaki_logs()";
@@ -1048,6 +929,8 @@ class login_ implements ActionListener {
                 table.getColumnModel().getColumn(7).setPreferredWidth(80);
                 table.getColumnModel().getColumn(8).setPreferredWidth(40);
                 table.getColumnModel().getColumn(9).setPreferredWidth(100);
+
+                
             }
             con.close();
         }
