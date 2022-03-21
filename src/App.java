@@ -148,7 +148,9 @@ class login_ implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setResizable(false);
+        
     }
+
 
     private static void placeComponents(JPanel panel) {
 
@@ -259,7 +261,7 @@ class login_ implements ActionListener {
         panel.add(loginButton_register);
 
         success_register = new JLabel("");
-        success_register.setBounds(30, 85, 300, 25);
+        success_register.setBounds(30, 150, 300, 25);
         success_register.setForeground(new ColorUIResource(153, 0, 0));
         panel.add(success_register);
         
@@ -350,9 +352,36 @@ class login_ implements ActionListener {
     }
     public void register_insert()
     {
-        /*String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
-        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";*/
+        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
+        String user = userText_register.getText();
+        String pass = passwordText_register.getText();
+        String ime = imeText_register.getText();
+        String priimek = priimekText_register.getText();
+
+        try {
+            Connection db = DriverManager.getConnection(url, username, password);
+            // java.sql.Statement st = db.createStatement();
+            CallableStatement cstmt = db.prepareCall("{?= CALL admini_add(?, ?, ?, ?)}");
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.setString(2, user);
+            cstmt.setString(3, pass);
+            cstmt.setString(4, ime);
+            cstmt.setString(5, priimek);
+            cstmt.execute();
+            Integer result = cstmt.getInt(1);
+            // System.out.println(result + "");
+            cstmt.close();
+            if (result == 1) {
+                LOGIN();
+            } else {
+                success_register.setText("Geslo je prekratko");
+            }
+            db.close();
+        } catch (java.sql.SQLException exception) {
+            System.out.println(exception.getMessage());
+        }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////insert in database admins
     }
     public static void menu() {
