@@ -128,6 +128,7 @@ class login_ implements ActionListener {
     public static JTextField usernameText;
     public static JTextField passText;
     public static JButton profile_updateButton;
+    public static JButton profile_backButton;
 
 
     public static JButton update_Button;
@@ -369,6 +370,13 @@ class login_ implements ActionListener {
             }
             menu();
         }
+        else if(e.getSource() == profile_backButton){
+            if(frame_profile != null)
+            {
+                frame_profile.dispose();
+            }
+            menu2();
+        }
          else {
             System.out.println("button not in e.getsource");
         }
@@ -404,6 +412,7 @@ class login_ implements ActionListener {
             frame_insert.dispose();
         }
     }
+    public static int profile_id = 0;
     public void login()
     {
         String user = userText.getText();
@@ -411,6 +420,15 @@ class login_ implements ActionListener {
             try {
                 Connection db = DriverManager.getConnection(url, username, password);
                 // java.sql.Statement st = db.createStatement();
+                CallableStatement cstmt2 = db.prepareCall("{?= CALL get_admin_id(?, ?)}");
+                cstmt2.registerOutParameter(1, Types.INTEGER);
+                cstmt2.setString(2, user);
+                cstmt2.setString(3, pass);
+                cstmt2.execute();
+                Integer result2 = cstmt2.getInt(1);
+                profile_id = result2;
+                
+
                 CallableStatement cstmt = db.prepareCall("{?= CALL prijava(?, ?)}");
                 cstmt.registerOutParameter(1, Types.INTEGER);
                 cstmt.setString(2, user);
@@ -429,6 +447,7 @@ class login_ implements ActionListener {
             } catch (java.sql.SQLException exception) {
                 System.out.println(exception.getMessage());
             }
+            
     }
     public void register_insert()
     {
@@ -475,6 +494,7 @@ class login_ implements ActionListener {
         frame_menu2.setLocationRelativeTo(null);
         frame_menu2.setVisible(true);
         frame_menu2.setResizable(false);
+        
     }
 
     public static void menu()
@@ -554,9 +574,9 @@ class login_ implements ActionListener {
         panel_menu.add(logsButton);
     }
 
-    public static void profile()
+    public void profile()
     {
-        
+        System.out.println(profile_id);
         frame_profile = new JFrame("PROFILE");
         frame_profile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame_profile.setPreferredSize(new Dimension(300, 400));
@@ -579,25 +599,19 @@ class login_ implements ActionListener {
             imeLabel.setBounds(10, 100, 80, 25);
             panel_profile.add(imeLabel);
 
-            profileimeText = new JTextField(20);
-            profileimeText.setBounds(125, 100, 100, 25);
-            panel_profile.add(profileimeText);
+            
 
             JLabel priimekLabel = new JLabel("Priimek");
             priimekLabel.setBounds(10, 130, 80, 25);
             panel_profile.add(priimekLabel);
 
-            profilepriimekText = new JTextField(20);
-            profilepriimekText.setBounds(125, 130, 100, 25);
-            panel_profile.add(profilepriimekText);
+            
 
             JLabel podkrajLabel = new JLabel("Username");
             podkrajLabel.setBounds(10, 160, 100, 25);
             panel_profile.add(podkrajLabel);
 
-            usernameText = new JTextField(20);
-            usernameText.setBounds(125, 160, 100, 25);
-            panel_profile.add(usernameText);
+            
 
             JLabel gesloLabel = new JLabel("Vpisi geslo za potrditev sprememb");
             gesloLabel.setBounds(30, 220, 200, 25);
@@ -608,28 +622,67 @@ class login_ implements ActionListener {
             panel_profile.add(passText);
 
             profile_updateButton = new JButton("UPDATE");
-            profile_updateButton.setBounds(90, 300, 90, 27);
+            profile_updateButton.setBounds(90, 290, 90, 27);
             profile_updateButton.setForeground(Color.white);
             profile_updateButton.addActionListener(new login_());
             panel_profile.add(profile_updateButton);
 
+            profile_backButton = new JButton("MENU");
+            profile_backButton.setBounds(90, 325, 90, 27);
+            profile_backButton.setForeground(Color.white);
+            profile_backButton.addActionListener(new login_());
+            panel_profile.add(profile_backButton);
+
             
             
-        /*String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
         try{
             Connection con = DriverManager.getConnection(url, username, password);
             java.sql.Statement stm = con.createStatement();
 
-            
+            String query = "SELECT view_admins()";
 
+                ResultSet res = stm.executeQuery(query);
+                String ime = "";
+                String priimek = "";
+                String user = "";
+
+                while (res.next()) {
+                String x = res.getString(1);
+                x = x.replace("(", "");
+                x = x.replace(")", "");
+                String parts[];
+                parts = x.split(",");
+                ime = parts[4];
+                priimek = parts[5];
+                user = parts[1];
+                System.out.println("partsID:" + parts[0]);
+                System.out.println("profileID:" + profile_id);
+                if(Integer.parseInt(parts[0]) == profile_id)
+                {
+                    
+                    break;
+                }
+                }
+                profileimeText = new JTextField(ime);
+                profileimeText.setBounds(125, 100, 100, 25);
+                panel_profile.add(profileimeText);
+
+                profilepriimekText = new JTextField(priimek);
+                profilepriimekText.setBounds(125, 130, 100, 25);
+                panel_profile.add(profilepriimekText);
+
+                usernameText = new JTextField(user);
+                usernameText.setBounds(125, 160, 100, 25);
+                panel_profile.add(usernameText);
             
             con.close();
         }
             catch (java.sql.SQLException e) {
                 System.out.println(e.getMessage());
-            }*/
+            }
     }
 
     public String izbran_id;
