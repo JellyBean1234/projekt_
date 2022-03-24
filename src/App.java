@@ -122,6 +122,14 @@ class login_ implements ActionListener {
     public static JTextField kraj_idText;
     public static JTextField razred_idText;
 
+    //profile update
+    public static JTextField profileimeText;
+    public static JTextField profilepriimekText;
+    public static JTextField usernameText;
+    public static JTextField passText;
+    public static JButton profile_updateButton;
+
+
     public static JButton update_Button;
     //allframes
     public static JFrame LOGINFrame;
@@ -334,20 +342,25 @@ class login_ implements ActionListener {
             posodobi();
         }
         else if(e.getSource() == registerButton){
-            register();///////////////////////////////////////////////////////////////////////////////////////////////////////////register dispose
+            if(frame_register != null)
+            {
+                frame_register.dispose();
+            }
+            register();
         }
         else if(e.getSource() == registerButton){
-            register();///////////////////////////////////////////////////////////////////////////////////////////////////////////register dispose
+            register();
         }
         else if(e.getSource() == loginButton_register){
             register_insert();
         }
         else if(e.getSource() == profile_Button){
+            profile();
             if(frame_menu2 != null)
             {
                 frame_menu2.dispose();
             } 
-            profile();
+            
         }
         else if(e.getSource() == databaseButton){
             if(frame_menu2 != null)
@@ -369,7 +382,7 @@ class login_ implements ActionListener {
         if(frame_programi != null)
         {
             frame_programi.dispose();
-        }
+        }   
         if(frame_dijaki != null)
         {
             frame_dijaki.dispose();
@@ -543,17 +556,80 @@ class login_ implements ActionListener {
 
     public static void profile()
     {
+        
         frame_profile = new JFrame("PROFILE");
         frame_profile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        JPanel panel_menu = new JPanel();
-        frame_profile.setBackground(new ColorUIResource(170, 170, 170));
-        frame_profile.add(panel_menu);
-        placeComponents_menu2(panel_menu);
-        frame_profile.setPreferredSize(new Dimension(300, 200));
+        frame_profile.setPreferredSize(new Dimension(300, 400));
+
+        JPanel panel_profile = new JPanel();
+        panel_profile.setBackground(new ColorUIResource(170, 170, 170));
+        panel_profile.setLayout(null);
+
+        frame_profile.add(panel_profile);
         frame_profile.pack();
         frame_profile.setLocationRelativeTo(null);
         frame_profile.setVisible(true);
         frame_profile.setResizable(false);
+        
+        JLabel pozdrav = new JLabel("LP");
+        pozdrav.setBounds(10,20,100,25);
+        panel_profile.add(pozdrav);
+        
+        JLabel imeLabel = new JLabel("Ime");
+            imeLabel.setBounds(10, 100, 80, 25);
+            panel_profile.add(imeLabel);
+
+            profileimeText = new JTextField(20);
+            profileimeText.setBounds(125, 100, 100, 25);
+            panel_profile.add(profileimeText);
+
+            JLabel priimekLabel = new JLabel("Priimek");
+            priimekLabel.setBounds(10, 130, 80, 25);
+            panel_profile.add(priimekLabel);
+
+            profilepriimekText = new JTextField(20);
+            profilepriimekText.setBounds(125, 130, 100, 25);
+            panel_profile.add(profilepriimekText);
+
+            JLabel podkrajLabel = new JLabel("Username");
+            podkrajLabel.setBounds(10, 160, 100, 25);
+            panel_profile.add(podkrajLabel);
+
+            usernameText = new JTextField(20);
+            usernameText.setBounds(125, 160, 100, 25);
+            panel_profile.add(usernameText);
+
+            JLabel gesloLabel = new JLabel("Vpisi geslo za potrditev sprememb");
+            gesloLabel.setBounds(30, 220, 200, 25);
+            panel_profile.add(gesloLabel);
+
+            passText = new JPasswordField(20);
+            passText.setBounds(30, 250, 200, 25);
+            panel_profile.add(passText);
+
+            profile_updateButton = new JButton("UPDATE");
+            profile_updateButton.setBounds(90, 300, 90, 27);
+            profile_updateButton.setForeground(Color.white);
+            profile_updateButton.addActionListener(new login_());
+            panel_profile.add(profile_updateButton);
+
+            
+            
+        /*String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
+        String username = "ioztqmdz";
+        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
+        try{
+            Connection con = DriverManager.getConnection(url, username, password);
+            java.sql.Statement stm = con.createStatement();
+
+            
+
+            
+            con.close();
+        }
+            catch (java.sql.SQLException e) {
+                System.out.println(e.getMessage());
+            }*/
     }
 
     public String izbran_id;
