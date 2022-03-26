@@ -127,6 +127,7 @@ class login_ implements ActionListener {
     public static JTextField profilepriimekText;
     public static JTextField usernameText;
     public static JTextField passText;
+    public static JTextField gesloText;
     public static JButton profile_updateButton;
     public static JButton profile_backButton;
 
@@ -573,9 +574,10 @@ class login_ implements ActionListener {
         logsButton.addActionListener(new login_());
         panel_menu.add(logsButton);
     }
-
+///yyy
     public void profile()
     {
+        view_database = "profile";
         System.out.println(profile_id);
         frame_profile = new JFrame("PROFILE");
         frame_profile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -595,19 +597,19 @@ class login_ implements ActionListener {
         pozdrav.setBounds(10,20,100,25);
         panel_profile.add(pozdrav);
         
-        JLabel imeLabel = new JLabel("Ime");
+        JLabel imeLabel = new JLabel("Ime:");
             imeLabel.setBounds(10, 100, 80, 25);
             panel_profile.add(imeLabel);
 
             
 
-            JLabel priimekLabel = new JLabel("Priimek");
+            JLabel priimekLabel = new JLabel("Priimek:");
             priimekLabel.setBounds(10, 130, 80, 25);
             panel_profile.add(priimekLabel);
 
             
 
-            JLabel podkrajLabel = new JLabel("Username");
+            JLabel podkrajLabel = new JLabel("Username:");
             podkrajLabel.setBounds(10, 160, 100, 25);
             panel_profile.add(podkrajLabel);
 
@@ -617,15 +619,23 @@ class login_ implements ActionListener {
             gesloLabel.setBounds(30, 220, 200, 25);
             panel_profile.add(gesloLabel);
 
+            JLabel gesloLabel2 = new JLabel("Novo geslo:");
+            gesloLabel2.setBounds(10, 190, 100, 25);
+            panel_profile.add(gesloLabel2);
+
+            gesloText = new JPasswordField(20);
+            gesloText.setBounds(125, 190, 150, 25);
+            panel_profile.add(gesloText);
+
             passText = new JPasswordField(20);
             passText.setBounds(30, 250, 200, 25);
             panel_profile.add(passText);
 
-            profile_updateButton = new JButton("UPDATE");
-            profile_updateButton.setBounds(90, 290, 90, 27);
-            profile_updateButton.setForeground(Color.white);
-            profile_updateButton.addActionListener(new login_());
-            panel_profile.add(profile_updateButton);
+            update_Button = new JButton("UPDATE");
+            update_Button.setBounds(90, 290, 90, 27);
+            update_Button.setForeground(Color.white);
+            update_Button.addActionListener(new login_());
+            panel_profile.add(update_Button);
 
             profile_backButton = new JButton("MENU");
             profile_backButton.setBounds(90, 325, 90, 27);
@@ -1258,13 +1268,20 @@ class login_ implements ActionListener {
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-        String izbran_id = updateText.getText();
-        int izbranID = Integer.valueOf(izbran_id);
+        String izbranid = "";
+        int izbranID = 0;
+        if(view_database != "profile")
+        {
+            izbran_id = updateText.getText();
+            izbranID = Integer.valueOf(izbran_id);
+        }
+        System.out.println(izbranid);
         try{
             Connection con = DriverManager.getConnection(url, username, password);
             java.sql.Statement stm = con.createStatement();
 
             if (view_database == "razredi") {
+                
             frame_insert = new JFrame("razredi update");
             frame_insert.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             JPanel panel_razredi = new JPanel();
@@ -2155,11 +2172,23 @@ public void posodobi()
     int kraj_id;
     int razred_id;
     String spol;
-    
+
+    String imeProfile;
+    String priimekProfile;
+    String usernameProfile;
+    String pass;
+    String geslo;
+    System.out.println(view_database + "lol");
         try {
             Connection con = DriverManager.getConnection(url, username, password);
-            String izbran_id = updateText.getText();
-            int izbranID = Integer.valueOf(izbran_id);
+            String izbran_id = "";
+            int izbranID = 0;
+            if(view_database != "profile")
+            {
+                izbran_id = updateText.getText();
+                izbranID = Integer.valueOf(izbran_id);
+            }
+            
             if (view_database == "dijaki") {
                 dijaki_ime = dijak_imeText.getText();
                 dijak_priimek = priimekText.getText();
@@ -2247,6 +2276,25 @@ public void posodobi()
                 cstmt.execute();
                 cstmt.close();
             }
+            if (view_database == "profile") {
+                imeProfile = profileimeText.getText();
+                priimekProfile = profilepriimekText.getText();
+                usernameProfile = usernameText.getText();
+                geslo = gesloText.getText();
+                pass = passText.getText();
+                System.out.println("here");
+                //update
+                CallableStatement cstmt = con.prepareCall("{CALL update_profile(?,?,?,?,?,?)}");
+                cstmt.setString(1,imeProfile);
+                cstmt.setString(2, priimekProfile);//////////////////////////////////////////////////////////////////////////////////////////////////
+                cstmt.setString(3, usernameProfile);
+                cstmt.setString(4, geslo);
+                cstmt.setInt(5, profile_id);
+                cstmt.setString(6, pass);
+                cstmt.execute();
+                cstmt.close();
+            }
+            
             con.close();
         }
 
