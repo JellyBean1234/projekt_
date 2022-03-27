@@ -94,6 +94,7 @@ class login_ implements ActionListener {
     public static JButton insertButton;
     public static JButton InsertButton;
     private static JLabel success;
+    public static JButton back_register;
 
     public static JTextField deleteText;
     
@@ -130,6 +131,7 @@ class login_ implements ActionListener {
     public static JTextField gesloText;
     public static JButton profile_updateButton;
     public static JButton profile_backButton;
+    public static JLabel pozdrav;
 
 
     public static JButton update_Button;
@@ -285,8 +287,14 @@ class login_ implements ActionListener {
         loginButton_register.addActionListener(new login_());
         panel.add(loginButton_register);
 
+        back_register = new JButton("Back");
+        back_register.setBounds(150, 180, 110, 25);
+        back_register.setForeground(Color.white);
+        back_register.addActionListener(new login_());
+        panel.add(back_register);
+
         success_register = new JLabel("");
-        success_register.setBounds(30, 150, 300, 25);
+        success_register.setBounds(10, 150, 300, 25);
         success_register.setForeground(new ColorUIResource(153, 0, 0));
         panel.add(success_register);
         
@@ -336,21 +344,18 @@ class login_ implements ActionListener {
             up_in_dispose();
             insert();
         }else if(e.getSource() == InsertButton){
-            dodaj();
             view_dispose();
+            dodaj();
             view();
         }else if(e.getSource() == update_Button){
             view_dispose();
             posodobi();
         }
         else if(e.getSource() == registerButton){
-            if(frame_register != null)
+            if(LOGINFrame != null)
             {
-                frame_register.dispose();
+                LOGINFrame.dispose();
             }
-            register();
-        }
-        else if(e.getSource() == registerButton){
             register();
         }
         else if(e.getSource() == loginButton_register){
@@ -377,6 +382,14 @@ class login_ implements ActionListener {
                 frame_profile.dispose();
             }
             menu2();
+        }
+        else if(e.getSource() == back_register)
+        {
+            if(frame_register != null)
+            {
+                frame_register.dispose();
+            }
+            LOGIN();
         }
          else {
             System.out.println("button not in e.getsource");
@@ -408,9 +421,15 @@ class login_ implements ActionListener {
     }
     public void up_in_dispose()
     {
+        System.out.println("up_in_dispose");
         if(frame_insert != null)
         {
             frame_insert.dispose();
+        }
+        if(frame_menu != null && frame_insert != null)
+        {
+            System.out.println("dispose");
+            frame_menu.dispose();
         }
     }
     public static int profile_id = 0;
@@ -475,8 +494,12 @@ class login_ implements ActionListener {
             cstmt.close();
             if (result == 1) {
                 LOGIN();
-            } else {
+            } else if(result == 0)
+            {
                 success_register.setText("Geslo je prekratko");
+            }else if(result == 2)
+            {
+                success_register.setText("Username already exists");
             }
             db.close();
         } catch (java.sql.SQLException exception) {
@@ -574,77 +597,11 @@ class login_ implements ActionListener {
         logsButton.addActionListener(new login_());
         panel_menu.add(logsButton);
     }
-///yyy
     public void profile()
     {
         view_database = "profile";
-        System.out.println(profile_id);
-        frame_profile = new JFrame("PROFILE");
-        frame_profile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame_profile.setPreferredSize(new Dimension(300, 400));
 
-        JPanel panel_profile = new JPanel();
-        panel_profile.setBackground(new ColorUIResource(170, 170, 170));
-        panel_profile.setLayout(null);
 
-        frame_profile.add(panel_profile);
-        frame_profile.pack();
-        frame_profile.setLocationRelativeTo(null);
-        frame_profile.setVisible(true);
-        frame_profile.setResizable(false);
-        
-        JLabel pozdrav = new JLabel("LP");
-        pozdrav.setBounds(10,20,100,25);
-        panel_profile.add(pozdrav);
-        
-        JLabel imeLabel = new JLabel("Ime:");
-            imeLabel.setBounds(10, 100, 80, 25);
-            panel_profile.add(imeLabel);
-
-            
-
-            JLabel priimekLabel = new JLabel("Priimek:");
-            priimekLabel.setBounds(10, 130, 80, 25);
-            panel_profile.add(priimekLabel);
-
-            
-
-            JLabel podkrajLabel = new JLabel("Username:");
-            podkrajLabel.setBounds(10, 160, 100, 25);
-            panel_profile.add(podkrajLabel);
-
-            
-
-            JLabel gesloLabel = new JLabel("Vpisi geslo za potrditev sprememb");
-            gesloLabel.setBounds(30, 220, 200, 25);
-            panel_profile.add(gesloLabel);
-
-            JLabel gesloLabel2 = new JLabel("Novo geslo:");
-            gesloLabel2.setBounds(10, 190, 100, 25);
-            panel_profile.add(gesloLabel2);
-
-            gesloText = new JPasswordField(20);
-            gesloText.setBounds(125, 190, 150, 25);
-            panel_profile.add(gesloText);
-
-            passText = new JPasswordField(20);
-            passText.setBounds(30, 250, 200, 25);
-            panel_profile.add(passText);
-
-            update_Button = new JButton("UPDATE");
-            update_Button.setBounds(90, 290, 90, 27);
-            update_Button.setForeground(Color.white);
-            update_Button.addActionListener(new login_());
-            panel_profile.add(update_Button);
-
-            profile_backButton = new JButton("MENU");
-            profile_backButton.setBounds(90, 325, 90, 27);
-            profile_backButton.setForeground(Color.white);
-            profile_backButton.addActionListener(new login_());
-            panel_profile.add(profile_backButton);
-
-            
-            
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
@@ -676,17 +633,77 @@ class login_ implements ActionListener {
                     break;
                 }
                 }
-                profileimeText = new JTextField(ime);
-                profileimeText.setBounds(125, 100, 100, 25);
-                panel_profile.add(profileimeText);
 
-                profilepriimekText = new JTextField(priimek);
-                profilepriimekText.setBounds(125, 130, 100, 25);
-                panel_profile.add(profilepriimekText);
+        System.out.println(profile_id);
+        frame_profile = new JFrame("PROFILE");
+        frame_profile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame_profile.setPreferredSize(new Dimension(300, 400));
 
-                usernameText = new JTextField(user);
-                usernameText.setBounds(125, 160, 100, 25);
-                panel_profile.add(usernameText);
+        JPanel panel_profile = new JPanel();
+        panel_profile.setBackground(new ColorUIResource(170, 170, 170));
+        panel_profile.setLayout(null);
+
+        frame_profile.add(panel_profile);
+        frame_profile.pack();
+        frame_profile.setLocationRelativeTo(null);
+        frame_profile.setVisible(true);
+        frame_profile.setResizable(false);
+        
+        pozdrav = new JLabel("Pozdravljen " + user + "!", SwingConstants.CENTER);
+        pozdrav.setBounds(-20,20,300,25);
+        panel_profile.add(pozdrav);
+        
+        JLabel imeLabel = new JLabel("Ime:");
+        imeLabel.setBounds(10, 100, 80, 25);
+        panel_profile.add(imeLabel);
+
+        JLabel priimekLabel = new JLabel("Priimek:");
+        priimekLabel.setBounds(10, 130, 80, 25);
+        panel_profile.add(priimekLabel);
+
+        JLabel podkrajLabel = new JLabel("Username:");
+        podkrajLabel.setBounds(10, 160, 100, 25);
+        panel_profile.add(podkrajLabel);
+
+        JLabel gesloLabel = new JLabel("Vpisi geslo za potrditev sprememb");
+        gesloLabel.setBounds(30, 220, 200, 25);
+        panel_profile.add(gesloLabel);
+
+        JLabel gesloLabel2 = new JLabel("Novo geslo:");
+        gesloLabel2.setBounds(10, 190, 100, 25);
+        panel_profile.add(gesloLabel2);
+
+        gesloText = new JPasswordField(20);
+        gesloText.setBounds(125, 190, 150, 25);
+        panel_profile.add(gesloText);
+
+        passText = new JPasswordField(20);
+        passText.setBounds(30, 250, 200, 25);
+        panel_profile.add(passText);
+
+        update_Button = new JButton("UPDATE");
+        update_Button.setBounds(90, 290, 90, 27);
+        update_Button.setForeground(Color.white);
+        update_Button.addActionListener(new login_());
+        panel_profile.add(update_Button);
+
+        profile_backButton = new JButton("MENU");
+        profile_backButton.setBounds(90, 325, 90, 27);
+        profile_backButton.setForeground(Color.white);
+        profile_backButton.addActionListener(new login_());
+        panel_profile.add(profile_backButton);
+
+        profileimeText = new JTextField(ime);
+        profileimeText.setBounds(125, 100, 100, 25);
+        panel_profile.add(profileimeText);
+
+        profilepriimekText = new JTextField(priimek);
+        profilepriimekText.setBounds(125, 130, 100, 25);
+        panel_profile.add(profilepriimekText);
+
+        usernameText = new JTextField(user);
+        usernameText.setBounds(125, 160, 100, 25);
+        panel_profile.add(usernameText);
             
             con.close();
         }
@@ -2178,7 +2195,6 @@ public void posodobi()
     String usernameProfile;
     String pass;
     String geslo;
-    System.out.println(view_database + "lol");
         try {
             Connection con = DriverManager.getConnection(url, username, password);
             String izbran_id = "";
@@ -2282,17 +2298,42 @@ public void posodobi()
                 usernameProfile = usernameText.getText();
                 geslo = gesloText.getText();
                 pass = passText.getText();
-                System.out.println("here");
+                
                 //update
-                CallableStatement cstmt = con.prepareCall("{CALL update_profile(?,?,?,?,?,?)}");
-                cstmt.setString(1,imeProfile);
-                cstmt.setString(2, priimekProfile);//////////////////////////////////////////////////////////////////////////////////////////////////
-                cstmt.setString(3, usernameProfile);
-                cstmt.setString(4, geslo);
-                cstmt.setInt(5, profile_id);
-                cstmt.setString(6, pass);
-                cstmt.execute();
-                cstmt.close();
+                CallableStatement checker = con.prepareCall("{?=CALL check_pass_profile_update(?,?,?)}");
+                checker.registerOutParameter(1, Types.INTEGER);
+                checker.setString(2, pass);
+                checker.setInt(3, profile_id);
+                checker.setString(4, geslo);
+                checker.execute();
+                int check = checker.getInt(1);
+                checker.close();
+
+                if(check == 1)
+                {
+                    CallableStatement cstmt = con.prepareCall("{CALL update_profile(?,?,?,?,?)}");
+                    cstmt.setString(1,imeProfile);
+                    cstmt.setString(2, priimekProfile);
+                    cstmt.setString(3, usernameProfile);
+                    cstmt.setString(4, geslo);
+                    cstmt.setInt(5, profile_id);
+                    cstmt.execute();
+                    cstmt.close();
+    
+                    frame_profile.dispose();
+                    profile();
+                }
+                else if(check == 0)
+                {
+                    pozdrav.setText("Geslo je napačno");
+                    pozdrav.setForeground(new Color(204, 0, 0));
+                }
+                else if(check == 2)
+                {
+                    pozdrav.setText("Novo geslo je prekratko (vsaj 7 crk)");
+                    pozdrav.setForeground(new Color(204, 0, 0));
+                }
+                
             }
             
             con.close();
