@@ -23,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+
 public class App {
 
     public static void main(String[] args) throws Exception {
@@ -85,6 +86,10 @@ class login_ implements ActionListener {
     public static JButton logsButton;
     public static JButton profile_Button;
     public static JButton databaseButton;
+    public static JButton exportButton;
+    public static JButton back_export;
+    public static JButton export_Button;
+    public static JButton graphButton;
 
     public static JButton viewButton;
     public static JButton addButton;
@@ -147,6 +152,7 @@ class login_ implements ActionListener {
     public static JFrame frame_logs;
     public static JFrame frame_insert;
     public static JFrame razredi_frame;
+    public static JFrame export_frame;
    
 
     static JComboBox<String> programiComboBox;
@@ -154,6 +160,8 @@ class login_ implements ActionListener {
     static JComboBox<String> razredi_kraji_ComboBox;
     static JComboBox<String> dijaki_spoli_ComboBox;
     static JComboBox<String> dijaki_razredi_ComboBox;
+
+    static JComboBox<String> tables_ComboBox;
 
 
     static String view_database = "";
@@ -391,6 +399,21 @@ class login_ implements ActionListener {
             }
             LOGIN();
         }
+        else if(e.getSource() == exportButton)
+        {
+            EXPORT();
+            
+        }
+        else if (e.getSource() ==  export_Button)
+        {
+            view_database = tables_ComboBox.getSelectedItem().toString();
+            export Export_ = new export();
+            Export_.export_(view_database);
+        }
+        else if(e.getSource() == graphButton)
+        {
+            graph();
+        }
          else {
             System.out.println("button not in e.getsource");
         }
@@ -529,7 +552,7 @@ class login_ implements ActionListener {
         panel_menu.setBackground(new ColorUIResource(170, 170, 170));
         frame_menu.add(panel_menu);
         placeComponents_menu2(panel_menu);
-        frame_menu.setPreferredSize(new Dimension(300, 200));
+        frame_menu.setPreferredSize(new Dimension(300, 230));
         frame_menu.pack();
         frame_menu.setLocationRelativeTo(null);
         frame_menu.setVisible(true);
@@ -596,6 +619,12 @@ class login_ implements ActionListener {
         logsButton.setForeground(Color.white);
         logsButton.addActionListener(new login_());
         panel_menu.add(logsButton);
+
+        exportButton = new JButton("EXPORT");
+        exportButton.setBounds(100, 160, 90, 27);
+        exportButton.setForeground(Color.white);
+        exportButton.addActionListener(new login_());
+        panel_menu.add(exportButton);
     }
     public void profile()
     {
@@ -811,6 +840,16 @@ class login_ implements ActionListener {
                 insertButton.addActionListener(new login_());
                 insertButton.setForeground(Color.white);
                 panel.add(insertButton);
+
+                JLabel graph = new JLabel("Click to see graph");
+                graph.setBounds(10, 500, 100, 25);
+                panel.add(graph);
+
+                graphButton = new JButton("GRAPH");
+                graphButton.setBounds(100, 500, 100, 25);
+                graphButton.addActionListener(new login_());
+                graphButton.setForeground(Color.white);
+                panel.add(graphButton);
 
                 // panel.setLayout(null);
                 razredi_frame.add(panel);
@@ -2012,6 +2051,8 @@ class login_ implements ActionListener {
             dijaki_razredi_ComboBox.setBounds(125, 170, 165, 25);
             panel_dijaki.add(dijaki_razredi_ComboBox);
 
+            
+
             InsertButton = new JButton("INSERT");
             InsertButton.setBounds(200, 215, 90, 25);
             InsertButton.addActionListener(new login_());
@@ -2343,6 +2384,64 @@ public void posodobi()
             System.out.println(e.getMessage());
         }
         view();
+}
+
+public void EXPORT()
+{
+    export_frame = new JFrame("EXPORT");
+    export_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    JPanel export_panel = new JPanel();
+    export_panel.setBackground(new ColorUIResource(170, 170, 170));
+    export_frame.add(export_panel);
+    placeComponents_export(export_panel);
+    export_frame.setPreferredSize(new Dimension(250, 180));
+    export_frame.pack();
+    export_frame.setLocationRelativeTo(null);
+    export_frame.setVisible(true);
+    export_frame.setResizable(false);
+}
+
+private static void placeComponents_export(JPanel export_panel) {
+    export_panel.setLayout(null);
+
+    JLabel programLabel = new JLabel("Izberi tabelo");
+    programLabel.setBounds(10, 10, 80, 25);
+    export_panel.add(programLabel);
+
+    String tables[] = {"dijaki", "razredi", "kraji", "programi","logs"};
+    tables_ComboBox = new JComboBox<>(tables);
+    tables_ComboBox.setBounds(10, 40, 165, 25);
+    export_panel.add(tables_ComboBox);
+
+    view_database = tables_ComboBox.getSelectedItem().toString();
+
+    export_Button = new JButton("Export");
+    export_Button.setBounds(65, 80, 110, 25);
+    export_Button.setForeground(Color.white);
+    export_Button.addActionListener(new login_());
+    export_panel.add(export_Button);
+
+    back_export = new JButton("Back");
+    back_export.setBounds(65, 110, 110, 25);
+    back_export.setForeground(Color.white);
+    back_export.addActionListener(new login_());
+    export_panel.add(back_export);
+}
+public void graph()
+{
+    String title = "My Title";
+		 double[] values = new double[]{5,2,3,4,5,5};
+    String[] labels = new String[]{"A","asd","C","D","E","A"};
+    Color[] colors = new Color[]{
+        Color.red,
+        Color.orange,
+        Color.yellow,
+        Color.green,
+        Color.blue,
+        Color.black
+    };
+    BarChart_ br = new BarChart_(values, labels, colors, title);
+    br.run_();
 }
 
 class FrameListner implements ComponentListener {
