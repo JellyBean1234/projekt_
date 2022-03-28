@@ -100,6 +100,7 @@ class login_ implements ActionListener {
     public static JButton InsertButton;
     private static JLabel success;
     public static JButton back_register;
+    public static JButton back_menu;
 
     public static JTextField deleteText;
     
@@ -402,17 +403,41 @@ class login_ implements ActionListener {
         else if(e.getSource() == exportButton)
         {
             EXPORT();
-            
+            if(frame_menu != null)
+            {
+            frame_menu.dispose();
+            }
         }
         else if (e.getSource() ==  export_Button)
         {
             view_database = tables_ComboBox.getSelectedItem().toString();
             export Export_ = new export();
             Export_.export_(view_database);
+            if(export_frame != null)
+            {
+                export_frame.dispose();
+            }
+            menu();
         }
         else if(e.getSource() == graphButton)
         {
             graph();
+        }
+        else if(e.getSource() == back_export)
+        {
+            if(export_frame != null)
+            {
+                export_frame.dispose();
+            }
+            menu();
+        }
+        else if(e.getSource() == back_menu)
+        {
+            if(frame_menu != null)
+            {
+                frame_menu.dispose();
+            }
+            menu2();
         }
          else {
             System.out.println("button not in e.getsource");
@@ -451,7 +476,6 @@ class login_ implements ActionListener {
         }
         if(frame_menu != null && frame_insert != null)
         {
-            System.out.println("dispose");
             frame_menu.dispose();
         }
     }
@@ -552,7 +576,7 @@ class login_ implements ActionListener {
         panel_menu.setBackground(new ColorUIResource(170, 170, 170));
         frame_menu.add(panel_menu);
         placeComponents_menu2(panel_menu);
-        frame_menu.setPreferredSize(new Dimension(300, 230));
+        frame_menu.setPreferredSize(new Dimension(260, 260));
         frame_menu.pack();
         frame_menu.setLocationRelativeTo(null);
         frame_menu.setVisible(true);
@@ -587,44 +611,50 @@ class login_ implements ActionListener {
         a.add(new ColorUIResource(200, 200, 200));
         UIManager.put("Button.gradient", a);
         razrediButton = new JButton("RAZREDI");
-        razrediButton.setBounds(100, 10, 90, 27);
+        razrediButton.setBounds(60, 10, 130, 27);
         razrediButton.setForeground(Color.white);
         razrediButton.addActionListener(new login_());
         panel_menu.add(razrediButton);
 
         UIManager.put("Button.gradient", a);
         programiButton = new JButton("PROGRAMI");
-        programiButton.setBounds(95, 40, 100, 27);
+        programiButton.setBounds(60, 40, 130, 27);
         programiButton.setForeground(Color.white);
         programiButton.addActionListener(new login_());
         panel_menu.add(programiButton);
 
         UIManager.put("Button.gradient", a);
         dijakiButton = new JButton("DIJAKI");
-        dijakiButton.setBounds(100, 70, 90, 27);
+        dijakiButton.setBounds(60, 70, 130, 27);
         dijakiButton.setForeground(Color.white);
         dijakiButton.addActionListener(new login_());
         panel_menu.add(dijakiButton);
 
         UIManager.put("Button.gradient", a);
         krajiButton = new JButton("KRAJI");
-        krajiButton.setBounds(100, 100, 90, 27);
+        krajiButton.setBounds(60, 100, 130, 27);
         krajiButton.setForeground(Color.white);
         krajiButton.addActionListener(new login_());
         panel_menu.add(krajiButton);
 
         UIManager.put("Button.gradient", a);
         logsButton = new JButton("LOGS");
-        logsButton.setBounds(100, 130, 90, 27);
+        logsButton.setBounds(60, 130, 130, 27);
         logsButton.setForeground(Color.white);
         logsButton.addActionListener(new login_());
         panel_menu.add(logsButton);
 
         exportButton = new JButton("EXPORT");
-        exportButton.setBounds(100, 160, 90, 27);
+        exportButton.setBounds(60, 160, 130, 27);
         exportButton.setForeground(Color.white);
         exportButton.addActionListener(new login_());
         panel_menu.add(exportButton);
+
+        back_menu = new JButton("BACK");
+        back_menu.setBounds(60, 190, 130, 27);
+        back_menu.setForeground(Color.white);
+        back_menu.addActionListener(new login_());
+        panel_menu.add(back_menu);
     }
     public void profile()
     {

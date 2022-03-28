@@ -126,9 +126,9 @@ public class BarChart_ extends JPanel {
       }
 
 
-    JFrame frame = new JFrame("Bar Chart Example");
+    JFrame frame = new JFrame("Štetje dijakov");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.setSize(350, 300);
+    frame.setSize(1000, 700);
  
     String title = "Štetje dijakov";
     double[] values = new double[]{Integer.parseInt(data[0][3]),Integer.parseInt(data[1][3]),Integer.parseInt(data[2][3]),Integer.parseInt(data[3][3]),Integer.parseInt(data[4][3]),Integer.parseInt(data[5][3]),Integer.parseInt(data[6][3]),Integer.parseInt(data[7][3]),Integer.parseInt(data[8][3]),Integer.parseInt(data[9][3]),Integer.parseInt(data[10][3]),Integer.parseInt(data[11][3])};
