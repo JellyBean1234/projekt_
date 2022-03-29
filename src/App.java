@@ -33,28 +33,7 @@ public class App {
         } catch (java.lang.ClassNotFoundException e) {
             System.out.println(e.getMessage());
 
-        }
-
-        String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
-        String username = "ioztqmdz";
-        String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
-
-        try {
-            Connection db = DriverManager.getConnection(url, username, password);
-            java.sql.Statement st = db.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM dijaki");
-            while (rs.next()) {
-                System.out.print("ID: ");
-                System.out.println(rs.getString(1));
-                System.out.print("IME: ");
-                System.out.println(rs.getString(2));
-            }
-            rs.close();
-            st.close();
-            db.close();
-        } catch (java.sql.SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        }   
 
         login_.LOGIN();
         
@@ -659,12 +638,11 @@ class login_ implements ActionListener {
     public void profile()
     {
         view_database = "profile";
-
-
         String url = "jdbc:postgresql://tyke.db.elephantsql.com/";
         String username = "ioztqmdz";
         String password = "XHXT-GD2Q6GU1LlaHFD22AErn8n9muaE";
         try{
+
             Connection con = DriverManager.getConnection(url, username, password);
             java.sql.Statement stm = con.createStatement();
 

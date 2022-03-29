@@ -132,7 +132,7 @@ public class BarChart_ extends JPanel {
  
     String title = "Štetje dijakov";
     double[] values = new double[]{Integer.parseInt(data[0][3]),Integer.parseInt(data[1][3]),Integer.parseInt(data[2][3]),Integer.parseInt(data[3][3]),Integer.parseInt(data[4][3]),Integer.parseInt(data[5][3]),Integer.parseInt(data[6][3]),Integer.parseInt(data[7][3]),Integer.parseInt(data[8][3]),Integer.parseInt(data[9][3]),Integer.parseInt(data[10][3]),Integer.parseInt(data[11][3])};
-    String[] labels = new String[]{"1EL \t","1TM \t ","1TR \t ","2EL \t ","2TM  \t","2TR \t ","3EL  \t","3TM  \t","3TR \t ","4EL  \t","4TM  \t","4TR  \t"};
+    String[] labels = new String[]{"1EL \n " + data[0][3],"1TM \t ","1TR \t ","2EL \t ","2TM  \t","2TR \t ","3EL  \t","3TM  \t","3TR \t ","4EL  \t","4TM  \t","4TR  \t"};
     Color[] colors = new Color[]{
         Color.red,
         Color.blue,
