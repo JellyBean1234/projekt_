@@ -348,6 +348,10 @@ class login_ implements ActionListener {
         }
         else if(e.getSource() == loginButton_register){
             register_insert();
+            if(frame_register != null)
+            {
+                frame_register.dispose();
+            }
         }
         else if(e.getSource() == profile_Button){
             profile();
@@ -386,6 +390,7 @@ class login_ implements ActionListener {
             {
             frame_menu.dispose();
             }
+            view_dispose();
         }
         else if (e.getSource() ==  export_Button)
         {
@@ -456,6 +461,7 @@ class login_ implements ActionListener {
         if(frame_menu != null && frame_insert != null)
         {
             frame_menu.dispose();
+            menu();
         }
     }
     public static int profile_id = 0;
